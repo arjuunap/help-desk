@@ -14,15 +14,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (token) {
     const decodedToken = jwtHelper.decodeToken(token);
-    //   console.log("==============",decodedToken);
-
-    // console.log(decodedToken.role);
-
-    // console.log(decodedToken.userId);
-
-    // console.log(decodedToken.sub);
-
-    // Check token expired
+    
     if (jwtHelper.isTokenExpired(token)) {
 
       // Remove session
@@ -31,12 +23,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       // Redirect login
       router.navigate(['/login']);
-
+      
       return EMPTY;
-
     }
-
-    // Attach token
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`

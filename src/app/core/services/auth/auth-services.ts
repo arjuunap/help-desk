@@ -16,6 +16,10 @@ export class AuthServices {
 
     jwtHelper = new JwtHelperService();
 
+    googleLogin() {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  }
+
 
   getUsers() {
     return this.http.get(`${this.apiUrl}/get-users`);
@@ -54,6 +58,10 @@ export class AuthServices {
     const decodedToken = this.getDecodedToken();
 
     return decodedToken?.role || '';
+  }
+
+  UserDetails() {
+    return this.http.get(this.apiUrl + '/me');
   }
 
 }

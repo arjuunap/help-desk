@@ -29,4 +29,7 @@ export class Register {
 
     this.router.navigate(['/login']);
   }
+  googleLogin() {
+    this.authServices.googleLogin()
+  }
 }
