@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const jwtHelper = new JwtHelperService();
 
   if (token) {
-    const decodedToken = jwtHelper.decodeToken(token);
+    // const decodedToken = jwtHelper.decodeToken(token);
     
     if (jwtHelper.isTokenExpired(token)) {
 

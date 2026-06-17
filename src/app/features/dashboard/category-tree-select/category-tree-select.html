@@ -1,0 +1,98 @@
+<!-- category-tree-select.component.html -->
+<div class="tree-select" [class.is-open]="isOpen" [class.is-disabled]="disabled">
+
+  <button
+    type="button"
+    class="tree-select-trigger"
+    [class.invalid]="invalid && !selectedNode"
+    [disabled]="disabled"
+    (click)="toggleDropdown()">
+
+    <span class="trigger-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>
+      </svg>
+    </span>
+
+    <span class="trigger-text" [class.placeholder]="!selectedNode">
+      <ng-container *ngIf="loading">Loading categories…</ng-container>
+      <ng-container *ngIf="!loading && selectedNode">{{ getBreadcrumb(selectedNode) }}</ng-container>
+      <ng-container *ngIf="!loading && !selectedNode">Select a category</ng-container>
+    </span>
+
+    <span class="trigger-clear" *ngIf="selectedNode && !disabled" (click)="clearSelection($event)" title="Clear selection">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </span>
+
+    <span class="trigger-chevron" [class.rotated]="isOpen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </span>
+  </button>
+
+  <div class="tree-dropdown" *ngIf="isOpen">
+    <div class="tree-search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search categories…"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+        (click)="$event.stopPropagation()"
+        autocomplete="off" />
+    </div>
+
+    <div class="tree-list" *ngIf="!loading">
+      <div
+        class="tree-node"
+        *ngFor="let node of visibleNodes"
+        [class.selected]="selectedNode?.categoryId === node.categoryId"
+        [class.is-leaf]="isLeaf(node)"
+        [style.paddingLeft.px]="16 + node.depth * 20"
+        (click)="selectNode(node)">
+
+        <span
+          class="node-toggle"
+          *ngIf="!isLeaf(node)"
+          (click)="toggleExpand(node, $event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [class.rotated]="node.expanded">
+            <path d="m9 6 6 6-6 6"/>
+          </svg>
+        </span>
+        <span class="node-toggle-spacer" *ngIf="isLeaf(node)"></span>
+
+        <span class="node-icon" [class.leaf-icon]="isLeaf(node)">
+          <svg *ngIf="!isLeaf(node)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>
+          </svg>
+          <svg *ngIf="isLeaf(node)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9 12h6M9 16h6M9 8h6"/>
+            <rect x="4" y="3" width="16" height="18" rx="2"/>
+          </svg>
+        </span>
+
+        <span class="node-label">{{ node.name }}</span>
+
+        <span class="node-check" *ngIf="selectedNode?.categoryId === node.categoryId">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        </span>
+      </div>
+
+      <div class="tree-empty" *ngIf="visibleNodes.length === 0">
+        No categories found.
+      </div>
+    </div>
+
+    <div class="tree-loading" *ngIf="loading">
+      <span class="spinner"></span> Loading categories…
+    </div>
+  </div>
+</div>

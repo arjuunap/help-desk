@@ -1,10 +1,21 @@
 import { Routes } from '@angular/router';
 import { Register } from './features/auth/register/register';
 import { LoginComponent } from './features/auth/login/login';
+import {MainLayoutComponent} from './features/dashboard/main-layout/main-layout';
+import { CategoryList } from './features/dashboard/category/category';
+import { Home } from './features/dashboard/home/home';
+import { RegisterTicketComponent } from './features/dashboard/tickets/tickets';
+
 
 export const routes: Routes = [
     {path: '',redirectTo:'register',pathMatch : 'full'},
     {path: 'register',component : Register},
-    {path: 'login',component : LoginComponent}
+    {path: 'login',component : LoginComponent},
+    {path: 'main-layout',component : MainLayoutComponent,children:[
+        {path : '',redirectTo:'home',pathMatch : 'full'},
+        {path :'home',component : Home},
+        {path :'categories',component : CategoryList},
+        {path :'tickets',component : RegisterTicketComponent}
+    ]}
 
 ];

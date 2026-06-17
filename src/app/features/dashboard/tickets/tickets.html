@@ -1,0 +1,207 @@
+<!-- register-ticket.component.html -->
+<div class="ticket-page">
+    <div class="ticket-card">
+
+        <div class="ticket-header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+            </div>
+            <div>
+                <h1>Register Ticket</h1>
+                <p>Log a new support request and route it to the right team</p>
+            </div>
+        </div>
+
+        <!-- Success banner -->
+        <div class="banner banner-success" *ngIf="submitSuccess">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Ticket submitted successfully.</span>
+            <button type="button" class="banner-close" (click)="dismissSuccess()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Error banner -->
+        <div class="banner banner-error" *ngIf="submitError">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v5M12 16h.01" />
+            </svg>
+            <span>{{ submitError }}</span>
+            <button type="button" class="banner-close" (click)="dismissError()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" novalidate>
+
+            <!-- Subject -->
+            <div class="form-field">
+                <label for="subject">
+                    Subject <span class="required-mark">*</span>
+                </label>
+                <input id="subject" type="text" formControlName="subject" placeholder="Brief summary of the issue"
+                    [class.invalid]="isInvalid('subject')" />
+                <div class="field-footer">
+                    <span class="error-msg" *ngIf="isInvalid('subject')">{{ getError('subject') }}</span>
+                    <span class="char-count">{{ ticketForm.get('subject')?.value?.length || 0 }}/120</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-field">
+                <label for="description">
+                    Description <span class="required-mark">*</span>
+                </label>
+                <textarea id="description" rows="5" formControlName="description"
+                    placeholder="Describe the issue in detail — steps to reproduce, expected vs actual behavior, etc."
+                    [class.invalid]="isInvalid('description')"></textarea>
+                <div class="field-footer">
+                    <span class="error-msg" *ngIf="isInvalid('description')">{{ getError('description') }}</span>
+                    <span class="char-count">{{ descriptionLength }} characters</span>
+                </div>
+            </div>
+
+
+            <div class="form-field">
+                <label for="attachments">
+                    Attachments
+                </label>
+
+                <input #attachmentInput id="attachments" type="file" multiple (change)="onFilesSelected($event)"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
+
+                <div class="selected-files" *ngIf="selectedFiles.length > 0">
+                    <div *ngFor="let file of selectedFiles">
+                        {{ file.name }}
+                    </div>
+                </div>
+
+                <span class="field-hint">
+                    You can upload multiple files.
+                </span>
+            </div>
+
+            <!-- Priority + Channel -->
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="priority">
+                        Priority <span class="required-mark">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="priority" formControlName="priority" [class.invalid]="isInvalid('priority')">
+                            <option value="" disabled selected>Select priority</option>
+                            <option *ngFor="let p of priorities" [value]="p.value">{{ p.label }}</option>
+                        </select>
+                        <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </div>
+                    <span class="error-msg" *ngIf="isInvalid('priority')">{{ getError('priority') }}</span>
+                </div>
+
+                <div class="form-field">
+                    <label for="channel">
+                        Channel <span class="required-mark">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="channel" formControlName="channel" [class.invalid]="isInvalid('channel')">
+                            <option value="" disabled selected>Select channel</option>
+                            <option *ngFor="let c of channels" [value]="c.value">{{ c.label }}</option>
+                        </select>
+                        <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </div>
+                    <span class="error-msg" *ngIf="isInvalid('channel')">{{ getError('channel') }}</span>
+                </div>
+            </div>
+
+            <!-- Department + SLA Policy -->
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="departmentId">
+                        Department <span class="required-mark">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="departmentId" formControlName="departmentId"
+                            [class.invalid]="isInvalid('departmentId')" [disabled]="loadingDepartments">
+                            <option [ngValue]="null" disabled selected>
+                                {{ loadingDepartments ? 'Loading departments…' : 'Select department' }}
+                            </option>
+                            <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.name }}</option>
+                        </select>
+                        <span class="select-spinner" *ngIf="loadingDepartments"><span class="spinner"></span></span>
+                        <svg class="select-chevron" *ngIf="!loadingDepartments" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </div>
+                    <span class="error-msg" *ngIf="isInvalid('departmentId')">{{ getError('departmentId') }}</span>
+                </div>
+
+                <div class="form-field">
+                    <label for="slaPolicyId">
+                        SLA Policy <span class="required-mark">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="slaPolicyId" formControlName="slaPolicyId"
+                            [class.invalid]="isInvalid('slaPolicyId')" [disabled]="loadingSlaPolicies">
+                            <option [ngValue]="null" disabled selected>
+                                {{ loadingSlaPolicies ? 'Loading SLA policies…' : 'Select SLA policy' }}
+                            </option>
+                            <option *ngFor="let s of slaPolicies" [ngValue]="s.slaPolicyId">
+                                {{ s.name }}{{ s.responseTime ? ' (' + s.responseTime + ')' : '' }}
+                            </option>
+                        </select>
+                        <span class="select-spinner" *ngIf="loadingSlaPolicies"><span class="spinner"></span></span>
+                        <svg class="select-chevron" *ngIf="!loadingSlaPolicies" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </div>
+                    <span class="error-msg" *ngIf="isInvalid('slaPolicyId')">{{ getError('slaPolicyId') }}</span>
+                </div>
+            </div>
+
+            <!-- Category (tree select) -->
+            <div class="form-field">
+                <label>
+                    Category <span class="required-mark">*</span>
+                </label>
+                <app-category-tree-select [categories]="categories" [loading]="loadingCategories"
+                    [selectedId]="selectedCategoryId" [invalid]="isInvalid('categoryId')"
+                    (selectionChange)="onCategorySelected($event)">
+                </app-category-tree-select>
+                <span class="error-msg" *ngIf="isInvalid('categoryId')">{{ getError('categoryId') }}</span>
+                <span class="field-hint">Select a leaf-level category. Click a parent to expand its
+                    subcategories.</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="resetForm()" [disabled]="submitting">
+                    Reset
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="ticketForm.invalid || submitting">
+                    <span class="spinner spinner-light" *ngIf="submitting"></span>
+                    <svg *ngIf="!submitting" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                    {{ submitting ? 'Submitting…' : 'Submit Ticket' }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

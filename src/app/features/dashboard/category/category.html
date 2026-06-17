@@ -1,0 +1,101 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Categories</h1>
+      <p class="page-subtitle">Manage ticket categories used across the helpdesk</p>
+    </div>
+    <button class="btn-primary" type="button" (click)="openModal()">
+      <span class="btn-icon">+</span>
+      Add category
+    </button>
+  </div>
+
+  <div class="state-banner" *ngIf="isLoading">Loading categories...</div>
+  <div class="state-banner state-error" *ngIf="loadError && !isLoading">{{ loadError }}</div>
+
+  <div class="empty-state" *ngIf="!isLoading && !loadError && categories.length === 0">
+    <p>No categories yet.</p>
+    <button class="btn-primary" type="button" (click)="openModal()">Add your first category</button>
+  </div>
+
+  <div class="category-grid" *ngIf="!isLoading && categories.length > 0">
+    <div class="category-card" *ngFor="let category of categories">
+      <div class="card-top">
+        <h3 class="card-title">{{ category.name }}</h3>
+        <!-- <button
+          class="icon-btn"
+          type="button"
+          title="Delete category"
+          (click)="deleteCategory(category)"
+        >
+          &times;
+        </button> -->
+      </div>
+      <p class="card-description">{{ category.description }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="onOverlayClick($event)">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Add category</h2>
+      <button class="icon-btn" type="button" (click)="closeModal()" [disabled]="isSubmitting">&times;</button>
+    </div>
+
+    <!-- <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="categoryName">Name</label>
+        <input
+          id="categoryName"
+          type="text"
+          class="form-input"
+          formControlName="name"
+          placeholder="e.g. Billing"
+          [class.input-error]="name?.invalid && name?.touched"
+        />
+        <p class="field-error" *ngIf="name?.invalid && name?.touched">
+          <span *ngIf="name?.errors?.['required']">Name is required.</span>
+          <span *ngIf="name?.errors?.['maxlength']">Name must be 60 characters or fewer.</span>
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="categoryDescription">Description</label>
+        <textarea
+          id="categoryDescription"
+          class="form-textarea"
+          formControlName="description"
+          rows="4"
+          placeholder="Short description of this category"
+          [class.input-error]="description?.invalid && description?.touched"
+        ></textarea>
+        <p class="field-error" *ngIf="description?.invalid && description?.touched">
+          <span *ngIf="description?.errors?.['required']">Description is required.</span>
+          <span *ngIf="description?.errors?.['maxlength']">Description must be 300 characters or fewer.</span>
+        </p>
+      </div>
+
+      <p class="state-banner state-error" *ngIf="submitError">{{ submitError }}</p>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="closeModal()"
+          [disabled]="isSubmitting"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="isSubmitting"
+        >
+          {{ isSubmitting ? 'Saving...' : 'Save category' }}
+        </button>
+      </div>
+    </form> -->
+  </div>
+</div>

@@ -7,13 +7,19 @@
       <p>Sign in to your account</p>
     </div>
 
-    <form>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
       <div class="form-group">
         <label>Email Address</label>
         <input
           type="email"
+          formControlName="email"
           placeholder="Enter your email">
+
+        <small
+          *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          Please enter a valid email.
+        </small>
       </div>
 
       <div class="form-group">
@@ -23,6 +29,7 @@
 
           <input
             [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
             placeholder="Enter your password">
 
           <button
@@ -32,12 +39,18 @@
 
             <i
               class="fa-solid"
-              [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'">
+              [class.fa-eye]="!showPassword"
+              [class.fa-eye-slash]="showPassword">
             </i>
 
           </button>
 
         </div>
+
+        <small
+          *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Password is required.
+        </small>
       </div>
 
       <div class="forgot-password">
@@ -46,7 +59,18 @@
         </a>
       </div>
 
-      <button class="login-btn">
+      <div *ngIf="errorMsg" class="error-message">
+        {{ errorMsg }}
+      </div>
+
+      <div *ngIf="successMsg" class="success-message">
+        {{ successMsg }}
+      </div>
+
+      <button
+        type="submit"
+        class="login-btn"
+        [disabled]="loginForm.invalid">
         Login
       </button>
 
@@ -54,7 +78,10 @@
         <span>OR</span>
       </div>
 
-      <button type="button" class="google-btn" (click)="googleLogin()">
+      <button
+        type="button"
+        class="google-btn"
+        (click)="googleLogin()">
 
         <img
           src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
@@ -64,11 +91,17 @@
 
       </button>
 
-      <div style="cursor: pointer;" class="register-link" (click)="goToRegister()">
+      <div
+        class="register-link"
+        style="cursor: pointer;"
+        (click)="goToRegister()">
+
         Don't have an account?
+
         <a routerLink="/register">
           Register
         </a>
+
       </div>
 
     </form>

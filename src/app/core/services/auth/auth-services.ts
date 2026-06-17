@@ -17,7 +17,7 @@ export class AuthServices {
     jwtHelper = new JwtHelperService();
 
     googleLogin() {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = 'http://192.168.0.246:8080/oauth2/authorization/google';
   }
 
 
@@ -30,7 +30,7 @@ export class AuthServices {
     window.location.href = '/login';
   }
   userLogin(data: any) {
-    return this.http.post<AuthResponse>(this.apiUrl + '/login', data);
+    return this.http.post(this.apiUrl + '/login', data);
   }
 
   logout() {

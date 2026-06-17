@@ -1,0 +1,113 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span class="brand-name">HelpDesk Pro</span>
+    </div>
+
+    <nav class="nav">
+
+  <div class="nav-section">
+    <p class="nav-section-title">Main</p>
+
+    <a class="nav-item"
+       routerLink="/main-layout/home"
+       routerLinkActive="active">
+      <span class="nav-icon" data-icon="dashboard"></span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+
+    <a class="nav-item"
+       routerLink="/tickets"
+       routerLinkActive="active">
+      <span class="nav-icon" data-icon="ticket"></span>
+      <span class="nav-label">All Tickets</span>
+      <span class="nav-badge badge-danger">14</span>
+    </a>
+
+    <a class="nav-item"
+       routerLink="/sla-breaches"
+       routerLinkActive="active">
+      <span class="nav-icon" data-icon="alert"></span>
+      <span class="nav-label">SLA Breaches</span>
+      <span class="nav-badge badge-danger">3</span>
+    </a>
+
+    <a class="nav-item"
+       routerLink="/my-queue"
+       routerLinkActive="active">
+      <span class="nav-icon" data-icon="queue"></span>
+      <span class="nav-label">My Queue</span>
+      <span class="nav-badge badge-neutral">6</span>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Manage</p>
+
+    <a class="nav-item"
+       routerLink="/agents"
+       routerLinkActive="active">
+      <span class="nav-label">Agents</span>
+    </a>
+
+    <a class="nav-item" routerLink="/main-layout/tickets" routerLinkActive="active">
+      <span class="nav-label">Tickets</span>
+
+    </a>
+
+    <a class="nav-item"
+       routerLink="/main-layout/categories"
+       routerLinkActive="active">
+      <span class="nav-label">Categories</span>
+    </a>
+
+    <a class="nav-item"
+       routerLink="/knowledge-base"
+       routerLinkActive="active">
+      <span class="nav-label">Knowledge Base</span>
+    </a>
+
+    <a class="nav-item"
+       routerLink="/reports"
+       routerLinkActive="active">
+      <span class="nav-label">Reports</span>
+    </a>  
+    
+
+  </div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">System</p>
+
+    <a class="nav-item"
+       routerLink="/settings"
+       routerLinkActive="active">
+      <span class="nav-label">Settings</span>
+    </a>
+
+  </div>
+
+</nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" type="button" (click)="onLogout()">
+        <span class="nav-icon" data-icon="logout"></span>
+        <span>Logout</span>
+      </button>
+
+      <div class="user-card">
+        <div class="user-avatar">{{ currentUser.initials }}</div>
+        <div class="user-info">
+          <p class="user-name">{{ currentUser.name }}</p>
+          <p class="user-role">{{ currentUser.role }}</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
