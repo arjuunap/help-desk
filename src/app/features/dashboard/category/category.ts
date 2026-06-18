@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CategoryServices } from '../../../core/services/category/category-services';
+import { AuthServices } from '../../../core/services/auth/auth-services';
+import { SlaPolicyServices } from '../../../core/services/sla-policy/sla-policy-services';
 
 @Component({
   selector: 'app-category-list',
@@ -19,27 +21,43 @@ export class CategoryList implements OnInit {
   isModalOpen = false;
   isSubmitting = false;
   submitError = '';
+  users : any = []
+  slas : any = []
 
   categoryForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryServices,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService : AuthServices,
+    private slaService : SlaPolicyServices
   ) {
     this.categoryForm = this.fb.group({
-      categoryType: ['MAIN'],
-      parentId: [null],
+  categoryType: ['MAIN', Validators.required],
 
-      name: ['', [Validators.required, Validators.maxLength(60)]],
+  parentId: [null],
 
-      description: ['', [Validators.required, Validators.maxLength(300)]]
-    });
+  userId: [null, Validators.required],
+
+  slaPolicyId: [null, Validators.required],
+
+  name: ['', [Validators.required, Validators.maxLength(60)]],
+
+  description: ['', [Validators.required, Validators.maxLength(300)]]
+});
   }
 
   ngOnInit(): void {
     this.loadCategories();
+    this.loadUsers();
+    this.loadSlas();
   }
+  get categoryType() {
+  return this.categoryForm.get('categoryType');
+}
+
+ 
 
   loadCategories(): void {
     this.isLoading = true;
@@ -62,13 +80,45 @@ export class CategoryList implements OnInit {
       }
     });
   }
+  loadUsers(): void {
+    this.authService.getUsers().subscribe({
+      next: (res) => {
+        this.users = res;
+        console.log('User details loaded:', res);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error loading user details:', err);
+      }
+    });
+  }
+  loadSlas(): void {
+    this.slaService.getSlaPolicies().subscribe({
+      next: (res) => {
+        this.slas = res;
+        console.log('SLA policies loaded:', res);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error loading SLA policies:', err);
+      }
+    });
+    
+  }
+  
 
   openModal(): void {
-    this.categoryForm.reset();
-    this.submitError = '';
-    this.isModalOpen = true;
-    this.cdr.markForCheck();
-  }
+  this.categoryForm.reset({
+    categoryType: 'MAIN',
+    parentId: null,
+    userId: null,
+    slaPolicyId: null
+  });
+
+  this.submitError = '';
+  this.isModalOpen = true;
+  this.cdr.markForCheck();
+}
 
   closeModal(): void {
     if (this.isSubmitting) {
@@ -102,10 +152,21 @@ export class CategoryList implements OnInit {
     this.submitError = '';
 
     const payload = {
-      name: this.categoryForm.value.name.trim(),
-      description: this.categoryForm.value.description.trim()
-    };
-    console.log(payload)
+  name: this.categoryForm.value.name.trim(),
+  description: this.categoryForm.value.description.trim(),
+
+  userId: this.categoryForm.value.userId,
+
+  slaPolicyId: this.categoryForm.value.slaPolicyId,
+
+  parentId:
+    this.categoryForm.value.categoryType === 'SUB'
+      ? this.categoryForm.value.parentId
+      : null
+};
+
+console.log(payload);
+    
 
     this.categoryService.create(payload).subscribe({
       next: (created) => {

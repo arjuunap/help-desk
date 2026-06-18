@@ -20,4 +20,20 @@ export class TicketServices {
     formData
   );
 }
+  getTickets(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/get-all-ticket`);
+  }
+
+  getTicketById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  updateTicketStatus(id: number, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
+  }
+
+  deleteTicket(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  } 
+
 }

@@ -5,6 +5,7 @@ import {MainLayoutComponent} from './features/dashboard/main-layout/main-layout'
 import { CategoryList } from './features/dashboard/category/category';
 import { Home } from './features/dashboard/home/home';
 import { RegisterTicketComponent } from './features/dashboard/tickets/tickets';
+import { TicketList } from './features/dashboard/ticket-list/ticket-list';
 
 
 export const routes: Routes = [
@@ -15,7 +16,9 @@ export const routes: Routes = [
         {path : '',redirectTo:'home',pathMatch : 'full'},
         {path :'home',component : Home},
         {path :'categories',component : CategoryList},
-        {path :'tickets',component : RegisterTicketComponent}
+        {path :'ticket-add',component : RegisterTicketComponent},
+        {path :'ticket-list',component : TicketList},
+        
     ]}
 
 ];

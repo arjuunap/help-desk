@@ -16,13 +16,13 @@ export class CategoryServices {
   return this.http.get<any[]>(this.apiUrl+'/get-all-category');
 }
   create(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/create`, payload);
+    return this.http.post<any>(`${this.apiUrl}/add-category`, payload);
   }
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
-  
+
   
 
 }

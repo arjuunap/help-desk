@@ -46,3 +46,13 @@ export interface TicketSubmitPayload {
   slaPolicyId: number;
   categoryId: number;
 }
+
+
+export interface TicketAttachment {
+  fileName: string;
+  fileSizeKb: number;
+  fileUrl: string;
+  mimeType: string;
+}
+
+

@@ -22,7 +22,7 @@ export class AuthServices {
 
 
   getUsers() {
-    return this.http.get(`${this.apiUrl}/get-users`);
+    return this.http.get(`${this.apiUrl}/fetch-all`);
 
   }
   googlelogout() {

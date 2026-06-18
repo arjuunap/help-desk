@@ -46,31 +46,67 @@
 
     <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="modal-form">
       <div class="form-group">
+        <label class="form-label">Category Type</label>
+
+        <select class="form-input" formControlName="categoryType">
+          <option value="MAIN">Parent Category</option>
+          <option value="SUB">Sub Category</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label class="form-label" for="categoryName">Name</label>
-        <input
-          id="categoryName"
-          type="text"
-          class="form-input"
-          formControlName="name"
-          placeholder="e.g. Billing"
-          [class.input-error]="name?.invalid && name?.touched"
-        />
+        <input id="categoryName" type="text" class="form-input" formControlName="name" placeholder="e.g. Billing"
+          [class.input-error]="name?.invalid && name?.touched" />
         <p class="field-error" *ngIf="name?.invalid && name?.touched">
           <span *ngIf="name?.errors?.['required']">Name is required.</span>
           <span *ngIf="name?.errors?.['maxlength']">Name must be 60 characters or fewer.</span>
         </p>
       </div>
 
+      <div class="form-group" *ngIf="categoryForm.get('categoryType')?.value === 'SUB'">
+        <label class="form-label">Parent Category</label>
+
+        <select class="form-input" formControlName="parentId">
+          <option [ngValue]="null">Select Parent Category</option>
+
+          <option *ngFor="let category of categories" [value]="category.categoryId">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+
+      <div class="form-group">
+        <label class="form-label">Assign User</label>
+
+        <select class="form-input" formControlName="userId">
+          <option [ngValue]="null">Select User</option>
+
+          <option *ngFor="let user of users" [value]="user.id">
+            {{ user.fullName }} </option>
+        </select>
+      </div>
+
+
+
+      <div class="form-group">
+        <label class="form-label">SLA Policy</label>
+
+        <select class="form-input" formControlName="slaPolicyId">
+          <option [ngValue]="null">Select SLA</option>
+
+          <option *ngFor="let sla of slas" [value]="sla.slaPolicyId">
+            {{ sla.name }}
+          </option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label class="form-label" for="categoryDescription">Description</label>
-        <textarea
-          id="categoryDescription"
-          class="form-textarea"
-          formControlName="description"
-          rows="4"
+        <textarea id="categoryDescription" class="form-textarea" formControlName="description" rows="4"
           placeholder="Short description of this category"
-          [class.input-error]="description?.invalid && description?.touched"
-        ></textarea>
+          [class.input-error]="description?.invalid && description?.touched"></textarea>
         <p class="field-error" *ngIf="description?.invalid && description?.touched">
           <span *ngIf="description?.errors?.['required']">Description is required.</span>
           <span *ngIf="description?.errors?.['maxlength']">Description must be 300 characters or fewer.</span>
@@ -80,19 +116,10 @@
       <p class="state-banner state-error" *ngIf="submitError">{{ submitError }}</p>
 
       <div class="modal-actions">
-        <button
-          type="button"
-          class="btn-secondary"
-          (click)="closeModal()"
-          [disabled]="isSubmitting"
-        >
+        <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSubmitting">
           Cancel
         </button>
-        <button
-          type="submit"
-          class="btn-primary"
-          [disabled]="isSubmitting"
-        >
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Saving...' : 'Save category' }}
         </button>
       </div>
