@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CategoryServices } from '../../../core/services/category/category-services';
-import { CategoryDto } from '../../../core/models/ticket';
 
 @Component({
   selector: 'app-category-list',
@@ -13,7 +12,7 @@ import { CategoryDto } from '../../../core/models/ticket';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryList implements OnInit {
-  categories: CategoryDto[] = [];
+  categories: any[] = [];
   isLoading = false;
   loadError = '';
 
@@ -29,7 +28,11 @@ export class CategoryList implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.categoryForm = this.fb.group({
+      categoryType: ['MAIN'],
+      parentId: [null],
+
       name: ['', [Validators.required, Validators.maxLength(60)]],
+
       description: ['', [Validators.required, Validators.maxLength(300)]]
     });
   }
@@ -44,8 +47,11 @@ export class CategoryList implements OnInit {
     this.categoryService.getCategories().subscribe({
       next: (data) => {
         console.log(data)
-        this.categories = data.filter(category => category.parentId  === null);
-        console.log("cat",this.categories)
+        // this.categories = data.filter(category => category.parentId === null);
+        this.categories = data.filter(
+          (category: any) => category.parentCategory === null
+        );
+        console.log("cat", this.categories)
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -86,35 +92,35 @@ export class CategoryList implements OnInit {
     return this.categoryForm.get('description');
   }
 
-  // onSubmit(): void {
-  //   if (this.categoryForm.invalid) {
-  //     this.categoryForm.markAllAsTouched();
-  //     return;
-  //   }
+  onSubmit(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
+    }
 
-  //   this.isSubmitting = true;
-  //   this.submitError = '';
+    this.isSubmitting = true;
+    this.submitError = '';
 
-  //   const payload = {
-  //     name: this.categoryForm.value.name.trim(),
-  //     description: this.categoryForm.value.description.trim()
-  //   };
-  //   console.log(payload)
+    const payload = {
+      name: this.categoryForm.value.name.trim(),
+      description: this.categoryForm.value.description.trim()
+    };
+    console.log(payload)
 
-  //   this.categoryService.create(payload).subscribe({
-  //     next: (created) => {
-  //       this.categories = [created, ...this.categories];
-  //       this.isSubmitting = false;
-  //       this.isModalOpen = false;
-  //       this.cdr.markForCheck();
-  //     },
-  //     error: () => {
-  //       this.submitError = 'Failed to create category. Please try again.';
-  //       this.isSubmitting = false;
-  //       this.cdr.markForCheck();
-  //     }
-  //   });
-  // }
+    this.categoryService.create(payload).subscribe({
+      next: (created) => {
+        this.categories = [created, ...this.categories];
+        this.isSubmitting = false;
+        this.isModalOpen = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.submitError = 'Failed to create category. Please try again.';
+        this.isSubmitting = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
   // deleteCategory(category: Category): void {
   //   const confirmed = confirm(`Delete "${category.name}"? This cannot be undone.`);

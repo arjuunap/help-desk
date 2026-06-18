@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { AuthResponse } from '../../models/auth-response';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { CategoryDto } from '../../models/ticket';
 @Injectable({
   providedIn: 'root',
 })
@@ -14,9 +13,16 @@ export class CategoryServices {
     private router: Router
   ) { }
   getCategories() {
-  return this.http.get<CategoryDto[]>(this.apiUrl+'/get-all-category');
+  return this.http.get<any[]>(this.apiUrl+'/get-all-category');
 }
+  create(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create`, payload);
+  }
 
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  }
+  
   
 
 }

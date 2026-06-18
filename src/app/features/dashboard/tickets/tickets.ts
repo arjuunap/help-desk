@@ -10,8 +10,7 @@ import {
 } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { CategoryDto, CategoryNode, Channel, Department, Priority, SlaPolicy, TicketSubmitPayload } from '../../../core/models/ticket';
-import { CategoryTreeSelectComponent } from '../category-tree-select/category-tree-select';
+import { Channel, Department, Priority, SlaPolicy, TicketSubmitPayload } from '../../../core/models/ticket';
 import { TicketServices } from '../../../core/services/tickets/ticket-services';
 import { DepartmentsServices } from '../../../core/services/departments/departments-services';
 import { SlaPolicyServices } from '../../../core/services/sla-policy/sla-policy-services';
@@ -32,7 +31,7 @@ interface ChannelOption {
 @Component({
   selector: 'app-register-ticket',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CategoryTreeSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tickets.html',
   styleUrls: ['./tickets.css']
@@ -63,7 +62,9 @@ export class RegisterTicketComponent implements OnInit {
 
   departments: Department[] = [];
   slaPolicies: SlaPolicy[] = [];
-  categories: CategoryDto[] = [];
+  categories: any[] = [];
+  subCategories: any[] = [];
+  selectedParentId: number | null = null;
 
   loadingDepartments = false;
   loadingSlaPolicies = false;
@@ -75,6 +76,11 @@ export class RegisterTicketComponent implements OnInit {
   submitSuccess = false;
 
   selectedCategoryId: number | null = null;
+
+  parentCategories: any[] = [];
+
+  selectedParent: any = null;
+  selectedSubCategory: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -128,6 +134,15 @@ export class RegisterTicketComponent implements OnInit {
           this.departments = departments;
           this.slaPolicies = slaPolicies;
           this.categories = categories;
+
+
+          console.log("sdccdscsd", this.categories)
+
+          this.parentCategories = categories.filter(
+            (c: any) => c.parentCategory === null
+          );
+
+
           console.log(this.categories, this.departments, this.slaPolicies)
           this.cdr.markForCheck();
         },
@@ -138,9 +153,33 @@ export class RegisterTicketComponent implements OnInit {
       });
   }
 
-  onCategorySelected(node: CategoryNode | null): void {
-    this.selectedCategoryId = node ? node.categoryId : null;
-    this.ticketForm.get('categoryId')?.setValue(this.selectedCategoryId);
+  onParentCategoryChange(parentId: number): void {
+
+    this.selectedParentId = parentId;
+
+    this.subCategories = this.categories.filter(
+      (c: any) =>
+        c.parentCategory &&
+        c.parentCategory.categoryId === parentId
+    );
+
+    this.selectedSubCategory = null;
+
+    this.ticketForm.patchValue({
+      categoryId: null
+    });
+
+    this.cdr.markForCheck();
+  }
+
+  onSubCategoryChange(categoryId: number): void {
+
+    this.selectedSubCategory = categoryId;
+
+    this.ticketForm.patchValue({
+      categoryId: categoryId
+    });
+
     this.ticketForm.get('categoryId')?.markAsTouched();
   }
 
@@ -216,6 +255,7 @@ export class RegisterTicketComponent implements OnInit {
       formData.append('files', file);
     });
 
+
     this.ticketService
       .submitTicket(formData)
       .pipe(finalize(() => {
@@ -223,7 +263,9 @@ export class RegisterTicketComponent implements OnInit {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => {
+        next: (res) => {
+          console.log(res)
+
           this.submitSuccess = true;
           this.resetForm();
         },

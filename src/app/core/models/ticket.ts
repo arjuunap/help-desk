@@ -11,17 +11,17 @@ export interface SlaPolicy {
   responseTime?: string; // e.g. "4h", "24h" - optional display hint
 }
 
-export interface CategoryDto {
-  categoryId: number;
-  name: string;
-  description?: string;
-  isActive?: boolean;
-  // Backend may send the parent link under any of these names depending on
-  // the endpoint/version. The tree builder checks all of them defensively.
-  parentId?: number | null;
-  parentCategoryId?: number | null;
-  parent?: { categoryId: number } | null;
-}
+// export interface CategoryDto {
+//   categoryId: number;
+//   name: string;
+//   description?: string;
+//   isActive?: boolean;
+//   // Backend may send the parent link under any of these names depending on
+//   // the endpoint/version. The tree builder checks all of them defensively.
+//   parentId?: number | null;
+//   parentCategoryId?: number | null;
+//   parent?: { categoryId: number } | null;
+// }
 
 // Tree node used internally by the category tree-select
 export interface CategoryNode {

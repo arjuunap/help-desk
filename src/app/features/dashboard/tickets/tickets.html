@@ -175,18 +175,74 @@
             </div>
 
             <!-- Category (tree select) -->
-            <div class="form-field">
-                <label>
-                    Category <span class="required-mark">*</span>
-                </label>
-                <app-category-tree-select [categories]="categories" [loading]="loadingCategories"
-                    [selectedId]="selectedCategoryId" [invalid]="isInvalid('categoryId')"
-                    (selectionChange)="onCategorySelected($event)">
-                </app-category-tree-select>
-                <span class="error-msg" *ngIf="isInvalid('categoryId')">{{ getError('categoryId') }}</span>
-                <span class="field-hint">Select a leaf-level category. Click a parent to expand its
-                    subcategories.</span>
-            </div>
+            <div class="form-row">
+
+    <!-- Parent Category -->
+    <div class="form-field">
+        <label>
+            Parent Category
+            <span class="required-mark">*</span>
+        </label>
+
+        <div class="select-wrapper">
+            <select
+                (change)="onParentCategoryChange(+$any($event.target).value)">
+
+                <option value="">
+                    Select Parent Category
+                </option>
+
+                <option
+                    *ngFor="let parent of parentCategories"
+                    [value]="parent.categoryId">
+
+                    {{ parent.name }}
+
+                </option>
+
+            </select>
+        </div>
+    </div>
+
+    <!-- Sub Category -->
+    <div
+        class="form-field"
+        *ngIf="subCategories.length">
+
+        <label>
+            Sub Category
+            <span class="required-mark">*</span>
+        </label>
+
+        <div class="select-wrapper">
+            <select
+                (change)="onSubCategoryChange(+$any($event.target).value)">
+
+                <option value="">
+                    Select Sub Category
+                </option>
+
+                <option
+                    *ngFor="let sub of subCategories"
+                    [value]="sub.categoryId">
+
+                    {{ sub.name }}
+
+                </option>
+
+            </select>
+        </div>
+
+        <span
+            class="error-msg"
+            *ngIf="isInvalid('categoryId')">
+
+            {{ getError('categoryId') }}
+
+        </span>
+    </div>
+
+</div>
 
             <!-- Actions -->
             <div class="form-actions">

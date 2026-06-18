@@ -44,7 +44,7 @@
       <button class="icon-btn" type="button" (click)="closeModal()" [disabled]="isSubmitting">&times;</button>
     </div>
 
-    <!-- <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="modal-form">
+    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="categoryName">Name</label>
         <input
@@ -96,6 +96,6 @@
           {{ isSubmitting ? 'Saving...' : 'Save category' }}
         </button>
       </div>
-    </form> -->
+    </form>
   </div>
 </div>
