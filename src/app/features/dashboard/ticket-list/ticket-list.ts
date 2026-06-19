@@ -44,6 +44,7 @@ export class TicketList implements OnInit {
   }
 
   fetchTickets(): void {
+    
     this.loading = true;
     this.errorMessage = '';
 
@@ -93,6 +94,8 @@ export class TicketList implements OnInit {
       minute: '2-digit'
     });
   }
+
+
 
   trackByTicketId(index: number, ticket: any): number {
     return ticket.ticketId;
@@ -145,8 +148,13 @@ export class TicketList implements OnInit {
     this.activeAttachmentImages = [];
     this.activeTicketNo = '';
   }
+  
   addTicket(): void {
     this.router.navigate(['/main-layout/ticket-add']);
     
+}
+  viewTicketDetails(ticketId: number): void {
+  console.log('Ticket ID:', ticketId);
+  this.router.navigate(['/main-layout/ticket-view', ticketId]);
 }
 }

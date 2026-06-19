@@ -73,6 +73,17 @@
           <span class="channel-text">{{ ticket.channel }}</span>
         </div>
 
+        <div>
+           <button (click)="viewTicketDetails(ticket.ticketId)">
+            view
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h6v6"/>
+              <path d="M10 14L21 3"/>
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            </svg>
+           </button>
+        </div>
+
         <div class="meta-item">
           <span class="meta-label">Attachments</span>
           <div class="attachment-wrapper">

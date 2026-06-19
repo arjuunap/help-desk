@@ -25,7 +25,7 @@ export class TicketServices {
   }
 
   getTicketById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/get-ticket/${id}`);
   }
 
   updateTicketStatus(id: number, status: string): Observable<any> {
