@@ -21,6 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       localStorage.clear();
       sessionStorage.clear();
 
+      
       // Redirect login
       router.navigate(['/login']);
       

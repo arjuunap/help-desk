@@ -13,6 +13,12 @@ export class SlaPolicyServices {private apiUrl = environment.apiUrl + '/sla-poli
   getSlaPolicies() {
   return this.http.get<any>(this.apiUrl+'/get-all-sla');
 }
+createSla(payload: any) {
+  return this.http.post<any>(this.apiUrl+'/add-sla', payload);
+}
+deleteSla(id: string) {
+  return this.http.delete<any>(`${this.apiUrl}/delete-sla/${id}`);
+}
   
 
 

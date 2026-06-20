@@ -62,8 +62,9 @@ export class MainLayoutComponent {
 
   
 
-  onLogout(): void {
-    // Replace with real logout logic (auth service call, clear tokens, navigate to /login, etc.)
-    console.log('Logout clicked');
+  logout() {
+
+    this.authServices.logout();
   }
+  
 }

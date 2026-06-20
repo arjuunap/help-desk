@@ -36,4 +36,8 @@ export class TicketServices {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   } 
 
+  getLogs(){
+    return this.http.get<any[]>(`${environment.apiUrl}/audit/audit-logs`);
+  }
+
 }

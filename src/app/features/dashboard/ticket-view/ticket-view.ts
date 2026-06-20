@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TicketServices } from '../../../core/services/tickets/ticket-services';
+import { CommentServices } from '../../../core/services/comment/comment-services';
 
 export interface Comment {
   id: number;
@@ -16,6 +17,7 @@ export interface Comment {
   avatarColor: string;
   text: string;
   postedAt: Date;
+  attachments?: any[];
 }
 
 @Component({
@@ -37,26 +39,72 @@ export class TicketDetailComponent implements OnInit {
   myInitials = 'ME';
   myAvatarColor = '#2563eb';
   private nextCommentId = 1;
+  currentTicketId = 0;
+  selectedFiles: File[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private ticketService: TicketServices,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private commentService: CommentServices
+  ) { }
 
   ngOnInit(): void {
     this.commentForm = this.fb.group({
-      text: ['', [Validators.required, Validators.minLength(3)]]
+      text: ['', [Validators.required, Validators.minLength(2)]]
     });
 
-    const ticketId = Number(this.route.snapshot.paramMap.get('ticketId'));
-    if (ticketId) {
-      this.fetchTicket(ticketId);
+    this.currentTicketId = Number(
+      this.route.snapshot.paramMap.get('ticketId')
+    );
+
+    if (this.currentTicketId) {
+      this.fetchTicket(this.currentTicketId);
+      this.fetchComments(this.currentTicketId);
     }
   }
+  fetchComments(ticketId: number): void {
+    this.commentService.getCommentsByTicketId(ticketId).subscribe({
+      next: (data) => {
+        console.log("comment data", data);
+        this.comments = data.map((item: any) => ({
+          id: item.commentId,
+          author: item.author?.fullName || 'User',
+          avatarInitials: (item.author?.fullName || 'U')
+            .split(' ')
+            .map((x: string) => x[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase(),
+          avatarColor: '#2563eb',
+          text: item.body,
+          postedAt: new Date(),
+          attachments: item.attachments || []
+        }));
 
-  
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.error = 'Failed to load comments.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    console.log(input.files);
+    if (!input.files) {
+      return;
+    }
+
+    this.selectedFiles = Array.from(input.files);
+    console.log(this.selectedFiles);
+
+
+  }
+
 
   fetchTicket(id: number): void {
     this.loading = true;
@@ -76,30 +124,112 @@ export class TicketDetailComponent implements OnInit {
   }
 
   submitComment(): void {
-    if (this.commentForm.invalid) return;
+    if (this.commentForm.invalid) {
+      return;
+    }
 
-    const newComment: Comment = {
-      id: this.nextCommentId++,
-      author: 'You',
-      avatarInitials: this.myInitials,
-      avatarColor: this.myAvatarColor,
-      text: this.commentForm.value.text.trim(),
-      postedAt: new Date()
+    const formData = new FormData();
+
+    const data = {
+      ticketId: this.currentTicketId,
+      body: this.commentForm.value.text.trim(),
+      internal: true
     };
 
-    this.comments = [...this.comments, newComment];
-    this.commentForm.reset();
-    this.cdr.markForCheck();
+    formData.append('data',
+      new Blob([JSON.stringify(data)],
+        { type: 'application/json' })
+    )
+
+    console.log("formm", JSON.stringify(data))
+
+
+
+    this.selectedFiles.forEach(file => {
+      formData.append('files', file);
+    });
+
+    this.commentService
+      .addComment(this.currentTicketId, formData)
+      .subscribe({
+        next: () => {
+
+          this.commentForm.reset();
+          this.selectedFiles = [];
+          this.fetchComments(this.currentTicketId);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Comment add failed', err);
+        }
+      });
   }
 
+  deleteComment(commentId: number): void {
+
+    
+
+    this.commentService.deleteComment(commentId).subscribe({
+      next: () => {
+
+        this.comments = this.comments.filter(
+          c => c.id !== commentId
+        );
+
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Delete comment failed', err);
+      }
+    });
+  }
+
+  deleteAttachment(commentId: number, attachment: any): void {
+
+    const attachmentId =
+      attachment.attachmentId ||
+      attachment.id ||
+      attachment.fileId;
+
+    
+
+    if (!attachmentId) {
+      console.error('Attachment id not found', attachment);
+      return;
+    }
+
+    if (!confirm('Delete this attachment?')) {
+      return;
+    }
+
+    this.commentService.deleteAttachment(attachmentId).subscribe({
+      next: () => {
+
+        const comment = this.comments.find(
+          c => c.id === commentId
+        );
+
+        if (comment) {
+          comment.attachments =
+            comment.attachments?.filter(a => a !== attachment);
+        }
+
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Delete attachment failed', err);
+        
+      }
+    });
+  }
   onEnterKey(event: Event): void {
-  const keyboardEvent = event as KeyboardEvent;
+    const keyboardEvent = event as KeyboardEvent;
 
-  if (!keyboardEvent.shiftKey) {
-    keyboardEvent.preventDefault();
-    this.submitComment();
+    if (!keyboardEvent.shiftKey) {
+      keyboardEvent.preventDefault();
+      this.submitComment();
+    }
   }
-}
 
   formatDate(dateStr: string): string {
     if (!dateStr) return '—';
@@ -119,4 +249,7 @@ export class TicketDetailComponent implements OnInit {
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return `${Math.floor(diff / 86400)}d ago`;
   }
+
+
+
 }

@@ -13,6 +13,14 @@ export class DepartmentsServices {private apiUrl = environment.apiUrl + '/depart
   getDepartments() {
   return this.http.get<any>(this.apiUrl+'/get-all-department');
 }
+  getDepartmentById(id: number) {
+  return this.http.get<any>(this.apiUrl + '/get-department-by-id/' + id);
+}
+
+  createDepartment(department: any) {
+  return this.http.post<any>(this.apiUrl + '/add-department', department);
+}
+
   
 
 

@@ -8,6 +8,7 @@
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
+      
       <input 
         type="text" 
         class="search-input" 
@@ -33,12 +34,13 @@
   </div>
 
   <div class="ticket-grid" *ngIf="!loading && !errorMessage && filteredTickets.length > 0">
-    <div class="ticket-card" *ngFor="let ticket of filteredTickets; trackBy: trackByTicketId">
+    <div (click)="viewTicketDetails(ticket.ticketId)" class="ticket-card" *ngFor="let ticket of filteredTickets; trackBy: trackByTicketId">
       
       <div class="card-header">
         <span class="ticket-no">{{ ticket.ticketNo }}</span>
         <span class="badge" [ngClass]="getPriorityClass(ticket.priority)">{{ ticket.priority }}</span>
       </div>
+
 
       <div class="card-body">
         <h3 class="ticket-subject" [title]="ticket.subject">{{ ticket.subject }}</h3>
@@ -52,6 +54,8 @@
           {{ getCategoryDisplay(ticket) }}
         </div>
       </div>
+
+      
 
       <hr class="card-divider">
 
@@ -73,7 +77,7 @@
           <span class="channel-text">{{ ticket.channel }}</span>
         </div>
 
-        <div>
+        <!-- <div>
            <button (click)="viewTicketDetails(ticket.ticketId)">
             view
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -82,7 +86,7 @@
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
             </svg>
            </button>
-        </div>
+        </div> -->
 
         <div class="meta-item">
           <span class="meta-label">Attachments</span>
@@ -91,7 +95,7 @@
               type="button"
               class="attachment-indicator"
               *ngIf="ticket.attachments.length > 0"
-              (click)="openAttachmentModal(ticket)">
+              (click)="$event.stopPropagation(); openAttachmentModal(ticket)">
               <svg class="attachment-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
                       stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -131,3 +135,4 @@
   </div>
 
 </div>
+<!-- this is a comment -->

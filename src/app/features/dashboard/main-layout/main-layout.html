@@ -18,7 +18,7 @@
     </a>
 
     <a class="nav-item"
-       routerLink="/tickets"
+       routerLink="/main-layout/ticket-list"
        routerLinkActive="active">
       <span class="nav-icon" data-icon="ticket"></span>
       <span class="nav-label">All Tickets</span>
@@ -46,24 +46,35 @@
   <div class="nav-section">
     <p class="nav-section-title">Manage</p>
 
-    <a class="nav-item"
+    <!-- <a class="nav-item"
        routerLink="/agents"
        routerLinkActive="active">
       <span class="nav-label">Agents</span>
-    </a>
+    </a> -->
 
-    <a class="nav-item" routerLink="/main-layout/ticket-list" routerLinkActive="active">
+    <!-- <a class="nav-item" routerLink="/main-layout/ticket-list" routerLinkActive="active">
       <span class="nav-label">Tickets</span>
 
+    </a> -->
+
+    <a class="nav-item" routerLink="/main-layout/departments" routerLinkActive="active">
+      <span class="nav-label">Departments</span>
+
     </a>
 
-    <a class="nav-item"
+    <a class="nav-item" routerLink="/main-layout/slas" routerLinkActive="active">
+      <span class="nav-label">slas</span>
+
+    </a>
+    
+
+    <a class="nav-item"`  
        routerLink="/main-layout/categories"
        routerLinkActive="active">
       <span class="nav-label">Categories</span>
     </a>
 
-    <a class="nav-item"
+    <!-- <a class="nav-item"
        routerLink="/knowledge-base"
        routerLinkActive="active">
       <span class="nav-label">Knowledge Base</span>
@@ -73,12 +84,12 @@
        routerLink="/reports"
        routerLinkActive="active">
       <span class="nav-label">Reports</span>
-    </a>  
+    </a>   -->
     
 
   </div>
 
-  <div class="nav-section">
+  <!-- <div class="nav-section">
     <p class="nav-section-title">System</p>
 
     <a class="nav-item"
@@ -87,12 +98,12 @@
       <span class="nav-label">Settings</span>
     </a>
 
-  </div>
+  </div> -->
 
 </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" type="button" (click)="onLogout()">
+      <button class="logout-btn" type="button" (click)="logout()">
         <span class="nav-icon" data-icon="logout"></span>
         <span>Logout</span>
       </button>
@@ -111,3 +122,4 @@
     <router-outlet></router-outlet>
   </main>
 </div>
+

@@ -1,1 +1,321 @@
-<p>home works!</p>
+<div class="dashboard">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <h1 class="topbar-title">Dashboard</h1>
+    <div class="topbar-right">
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Search tickets, users…" />
+      </div>
+      <button class="btn-new-ticket">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New ticket
+      </button>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stats-row">
+
+    <div class="stat-card">
+      <span class="stat-label">Open tickets</span>
+    <span class="stat-value">{{totalTickets}}</span>
+      <span class="stat-delta delta-up">+3 since yesterday</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Avg resolution</span>
+      <span class="stat-value">4.2h</span>
+      <span class="stat-delta delta-down">−18% this week</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">SLA breaches</span>
+      <span class="stat-value">3</span>
+      <span class="stat-delta delta-warn">Critical — needs attention</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">CSAT score</span>
+      <span class="stat-value">91%</span>
+      <span class="stat-delta delta-up">+4% vs last month</span>
+    </div>
+
+  </div>
+
+  <!-- Recent Tickets -->
+  <div class="section-card">
+
+    <div class="section-header">
+      <span class="section-title">Recent tickets</span>
+      <div class="filter-tabs">
+        <button class="filter-tab active">All</button>
+        <button class="filter-tab">Open</button>
+        <button class="filter-tab">In progress</button>
+        <button class="filter-tab">Resolved</button>
+      </div>
+    </div>
+
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>SUBJECT</th>
+          <th>STATUS</th>
+          <th>PRIORITY</th>
+          <th>ASSIGNEE</th>
+          <th>SLA</th>
+          <th>CREATED</th>
+        </tr>
+      </thead>
+      <tbody>
+
+<tr *ngFor="let ticket of paginatedTickets">
+    <td class="col-id">
+      <a class="ticket-link">
+        #{{ ticket.ticketNo }}
+      </a>
+    </td>
+
+    <td class="col-subject">
+      <span class="subject-text">
+        {{ ticket.subject }}
+      </span>
+
+      <span class="subject-meta">
+        {{ ticket.category?.description || 'No Category' }}
+      </span>
+    </td>
+
+    <td>
+      <span
+        class="status-badge"
+        [ngClass]="getStatusClass(ticket.status)">
+        {{ ticket.status }}
+      </span>
+    </td>
+
+    <td>
+      <span
+        class="priority-badge"
+        [ngClass]="getPriorityClass(ticket.priority)">
+        {{ ticket.priority }}
+      </span>
+    </td>
+
+    <td class="col-assignee">
+
+      <ng-container *ngIf="ticket.assigneeId; else unassigned">
+
+        <div class="avatar">
+          {{ getAssigneeInitials(ticket) }}
+        </div>
+
+        {{ getAssigneeName(ticket) }}
+
+      </ng-container>
+
+      <ng-template #unassigned>
+        Unassigned
+      </ng-template>
+
+    </td>
+
+    <td class="col-sla">
+
+      <span
+        class="sla-text"
+        [ngClass]="getSlaClass(ticket)">
+
+        {{ getSlaText(ticket) }}
+
+      </span>
+
+      <div class="sla-bar">
+        <div
+          class="sla-fill"
+          [style.width.%]="getSlaProgress(ticket)">
+        </div>
+      </div>
+
+    </td>
+
+    <td class="col-time">
+  {{ ticket.slaDueAt | date:'dd MMM yyyy' }}
+</td>
+
+  </tr>
+
+</tbody>
+    </table>
+
+
+    <div
+  class="pagination"
+  *ngIf="filteredTickets.length > pageSize">
+
+  <button
+    class="page-btn"
+    (click)="changePage(currentPage - 1)"
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <button
+    *ngFor="let page of [].constructor(totalPages); let i = index"
+    class="page-btn"
+    [class.active]="currentPage === i + 1"
+    (click)="changePage(i + 1)">
+
+    {{ i + 1 }}
+
+  </button>
+
+  <button
+    class="page-btn"
+    (click)="changePage(currentPage + 1)"
+    [disabled]="currentPage === totalPages">
+    Next
+  </button>
+
+</div>
+
+  </div>
+
+  <!-- Bottom Row: Recent Activity + Agent Workload -->
+  <div class="bottom-row">
+
+    <!-- Recent Activity -->
+    <div class="section-card activity-card">
+      <div class="section-header">
+        <span class="section-title">Recent activity</span>
+        <a class="view-all-link">View all</a>
+      </div>
+
+      <ul class="activity-list">
+
+        <li class="activity-item">
+          <span class="activity-dot dot-red"></span>
+          <div class="activity-body">
+            <p class="activity-text">
+              <strong>SLA breach</strong> — #TK-1039 SAP login error exceeded 4h SLA
+            </p>
+            <span class="activity-time">8 mins ago</span>
+          </div>
+        </li>
+
+        <li class="activity-item">
+          <span class="activity-dot dot-blue"></span>
+          <div class="activity-body">
+            <p class="activity-text">
+              <strong>Assigned</strong> — #TK-1042 VPN issue assigned to Saeed A.
+            </p>
+            <span class="activity-time">22 mins ago</span>
+          </div>
+        </li>
+
+        <li class="activity-item">
+          <span class="activity-dot dot-green"></span>
+          <div class="activity-body">
+            <p class="activity-text">
+              <strong>Resolved</strong> — #TK-1038 Printer issue closed by Saeed A.
+            </p>
+            <span class="activity-time">1h ago</span>
+          </div>
+        </li>
+
+        <li class="activity-item">
+          <span class="activity-dot dot-purple"></span>
+          <div class="activity-body">
+            <p class="activity-text">
+              <strong>Comment</strong> — Nora M. added a note to #TK-1041
+            </p>
+            <span class="activity-time">2h ago</span>
+          </div>
+        </li>
+
+        <li class="activity-item">
+          <span class="activity-dot dot-orange"></span>
+          <div class="activity-body">
+            <p class="activity-text">
+              <strong>Escalated</strong> — #TK-1039 escalated to Senior Engineer
+            </p>
+            <span class="activity-time">3h ago</span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- Agent Workload -->
+    <div class="section-card workload-card">
+      <div class="section-header">
+        <span class="section-title">Agent workload</span>
+        <a class="view-all-link">Manage</a>
+      </div>
+
+      <ul class="workload-list">
+
+        <li class="workload-item">
+          <span class="wl-dot dot-green-solid"></span>
+          <div class="avatar av-sa">SA</div>
+          <div class="wl-info">
+            <span class="wl-name">Saeed Al-Rashid</span>
+            <span class="wl-sub">6 active tickets</span>
+          </div>
+          <div class="wl-bar-wrap">
+            <div class="wl-bar"><div class="wl-fill" style="width: 75%"></div></div>
+          </div>
+          <span class="wl-pct">75%</span>
+        </li>
+
+        <li class="workload-item">
+          <span class="wl-dot dot-green-solid"></span>
+          <div class="avatar av-nm">NM</div>
+          <div class="wl-info">
+            <span class="wl-name">Nora Mohammed</span>
+            <span class="wl-sub">4 active tickets</span>
+          </div>
+          <div class="wl-bar-wrap">
+            <div class="wl-bar"><div class="wl-fill" style="width: 50%"></div></div>
+          </div>
+          <span class="wl-pct">50%</span>
+        </li>
+
+        <li class="workload-item">
+          <span class="wl-dot dot-green-solid"></span>
+          <div class="avatar av-fk">FK</div>
+          <div class="wl-info">
+            <span class="wl-name">Fahad Al-Kahtani</span>
+            <span class="wl-sub">3 active tickets</span>
+          </div>
+          <div class="wl-bar-wrap">
+            <div class="wl-bar"><div class="wl-fill" style="width: 38%"></div></div>
+          </div>
+          <span class="wl-pct">38%</span>
+        </li>
+
+        <li class="workload-item">
+          <span class="wl-dot dot-green-solid"></span>
+          <div class="avatar av-ra">RA</div>
+          <div class="wl-info">
+            <span class="wl-name">Reem Al-Anazi</span>
+            <span class="wl-sub">5 active tickets</span>
+          </div>
+          <div class="wl-bar-wrap">
+            <div class="wl-bar"><div class="wl-fill" style="width: 63%"></div></div>
+          </div>
+          <span class="wl-pct">63%</span>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+
+</div>
