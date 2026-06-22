@@ -14,7 +14,16 @@
 *, *::before, *::after {
   box-sizing: inherit;
 }
-
+.status-select {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  background: transparent;
+}
 /* ---- Top Bar ---- */
 .topbar {
   display: flex;
@@ -588,3 +597,95 @@
   opacity: .5;
   cursor: not-allowed;
 }
+
+
+.btn-assign {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal {
+  width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.user-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.close-btn {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.col-assignee {
+  cursor: pointer;
+}
+
+.col-assignee:hover {
+  background-color: #f8fafc;
+}
+
+.col-assignee {
+  cursor: pointer;
+}
+
+.assignee-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-icon {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.col-assignee:hover .edit-icon {
+  opacity: 1;
+}
+
+

@@ -28,9 +28,13 @@ export class TicketServices {
     return this.http.get<any>(`${this.apiUrl}/get-ticket/${id}`);
   }
 
+  
+
   updateTicketStatus(id: number, status: string): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
   }
+
+
 
   deleteTicket(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
@@ -39,5 +43,13 @@ export class TicketServices {
   getLogs(){
     return this.http.get<any[]>(`${environment.apiUrl}/audit/audit-logs`);
   }
+  assignAgent(ticketId:number,assigneId:number){
+    return this.http.put(`${this.apiUrl}/${ticketId}/assign/${assigneId}`,null)
+  }
+
+  
+
+
+
 
 }

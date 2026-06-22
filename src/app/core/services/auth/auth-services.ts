@@ -22,9 +22,8 @@ export class AuthServices {
 
 
   getUsers() {
-    return this.http.get(`${this.apiUrl}/fetch-all`);
-
-  }
+  return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff`);
+}
   googlelogout() {
     localStorage.removeItem('token');
     window.location.href = '/login';

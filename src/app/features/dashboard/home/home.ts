@@ -6,11 +6,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TicketServices } from '../../../core/services/tickets/ticket-services';
-
+import { Router } from '@angular/router';
+import { AuthServices } from '../../../core/services/auth/auth-services';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,16 +33,105 @@ export class Home implements OnInit {
   logs: any[] = [];
   loadingLogs = false;
   errorMessageLogs = '';
+  selectedTicket: any = null;
+showAssignModal = false;
+assigneeId:number = 0
+ticketId:number = 0
+
+users: any[] = [];
+filteredUsers: any[] = [];
 
   constructor(
     private ticketService: TicketServices,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private route: Router,
+    private userServices : AuthServices
   ) { }
 
   ngOnInit(): void {
     this.fetchTickets();
     this.fetchLogs();
   }
+
+  updateStatus(ticket: any, status: string): void {
+
+  const oldStatus = ticket.status;
+
+  ticket.status = status; // instant UI update
+
+  this.ticketService
+      .updateTicketStatus(ticket.ticketId, status)
+      .subscribe({
+        next: () => {
+          this.cd.markForCheck();
+        },
+        error: () => {
+          ticket.status = oldStatus; // revert if API fails
+          this.cd.markForCheck();
+        }
+      });
+}
+  
+
+
+openAssignModal(ticket: any): void {
+  this.selectedTicket = ticket;
+  this.showAssignModal = true;
+  console.log('ticket',this.selectedTicket)
+
+  this.userServices.getUsers().subscribe({
+    next: (users) => {
+      this.users = users;
+      this.filteredUsers = users;
+    }
+  });
+}
+
+searchUsers(): void {
+  const term = this.searchTerm.toLowerCase().trim();
+
+  this.filteredUsers = this.users.filter(user =>
+    user.name?.toLowerCase().includes(term) ||
+    user.email?.toLowerCase().includes(term)
+  );
+}
+
+assignAgent(userId: number): void {
+
+  
+    
+    this.assigneeId = userId
+    console.log(this.selectedTicket.ticketId,this.assigneeId)
+    
+  
+
+  this.ticketService.assignAgent( this.selectedTicket.ticketId,
+  this.assigneeId).subscribe({
+    next: (res) => {
+      console.log('sed',this.assigneeId,this.selectedTicket.ticketId)
+       console.log('res',res)
+      this.selectedTicket.assigneeId = userId;
+      this.fetchTickets(); 
+      const selectedUser = this.users.find(
+        u => u.id === userId
+      );
+     
+      this.cd.detectChanges();
+      this.cd.markForCheck()
+
+      this.selectedTicket.assigneeName = selectedUser?.name;
+
+      this.closeAssignModal();
+    }
+  });
+}
+
+
+closeAssignModal(): void {
+  this.showAssignModal = false;
+  this.selectedTicket = null;
+  this.searchTerm = '';
+}
 
   fetchTickets(): void {
 
@@ -92,6 +183,38 @@ export class Home implements OnInit {
     });
   }
 
+  addTicket(): void {
+  this.route.navigate(['/main-layout/ticket-add']);
+}
+
+
+getActivityDotClass(action: string): string {
+
+  switch (action?.toUpperCase()) {
+
+    case 'CREATED':
+      return 'dot-green';
+
+    case 'ASSIGNED':
+      return 'dot-blue';
+
+    case 'UPDATED':
+      return 'dot-purple';
+
+    case 'RESOLVED':
+      return 'dot-green';
+
+    case 'CLOSED':
+      return 'dot-orange';
+
+    case 'ESCALATED':
+      return 'dot-red';
+
+    default:
+      return 'dot-blue';
+  }
+}
+
   get paginatedTickets(): any[] {
 
     const start =
@@ -142,8 +265,8 @@ export class Home implements OnInit {
   }
 
   getAssigneeName(ticket: any): string {
-    return ticket.assigneeName || 'Unassigned';
-  }
+  return ticket.assignee?.fullName || 'Unassigned';
+}
 
   getAssigneeInitials(ticket: any): string {
 
