@@ -15,40 +15,36 @@ export class TicketServices {
   private apiUrl = environment.apiUrl + '/tickets';
 
   submitTicket(formData: FormData) {
-  return this.http.post(
-    `${this.apiUrl}/create`,
-    formData
-  );
-}
+    return this.http.post(
+      `${this.apiUrl}/create`,
+      formData
+    );
+  }
   getTickets(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-ticket`);
   }
-
+  
   getTicketById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/get-ticket/${id}`);
   }
+ 
 
-  
-
-  updateTicketStatus(id: number, status: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
+  updateTicketStatus(id: number, data: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/status/${id}/update`, data);
   }
-
-
 
   deleteTicket(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
-  } 
-
-  getLogs(){
+  }
+  
+  getLogs() {
     return this.http.get<any[]>(`${environment.apiUrl}/audit/audit-logs`);
   }
-  assignAgent(ticketId:number,assigneId:number){
-    return this.http.put(`${this.apiUrl}/${ticketId}/assign/${assigneId}`,null)
-  }
-
   
-
+  assignAgent(ticketId: number, assigneId: number) {
+    return this.http.put(`${this.apiUrl}/${ticketId}/assign/${assigneId}`, null)
+  }
+  
 
 
 

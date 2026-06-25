@@ -51,6 +51,8 @@ export class TicketList implements OnInit {
     this.ticketService.getTickets().subscribe({
       next: (data) => {
         this.tickets = data;
+                // this.totalTickets = data.length;
+
         this.filteredTickets = [...this.tickets];
         console.log('Tickets loaded:', this.tickets);
         this.cd.markForCheck();
@@ -112,25 +114,64 @@ export class TicketList implements OnInit {
     return `${FILE_BASE_URL}${fileUrl}`;
   }
 
-  filterTickets() {
-    if (!this.searchTerm || this.searchTerm.trim() === '') {
-      // If search is empty, show all tickets
-      this.filteredTickets = [...this.tickets];
-      return;
-    }
-
-    const term = this.searchTerm.toLowerCase().trim();
-
-    this.filteredTickets = this.tickets.filter(ticket => {
-      // Safely check properties, converting them to strings/lowercase
-      const idMatch = ticket.ticketNo?.toString().toLowerCase().includes(term);
-      const subjectMatch = ticket.subject?.toLowerCase().includes(term);
-      const descMatch = ticket.description?.toLowerCase().includes(term);
-      
-      // Returns true if ANY of the conditions match
-      return idMatch || subjectMatch || descMatch;
-    });
+  filterTickets(): void {
+  if (!this.searchTerm || this.searchTerm.trim() === '') {
+    
+    this.filteredTickets = [...this.tickets];
+    this.currentPage = 1;
+    this.cd.markForCheck();
+    return;
   }
+
+  const term = this.searchTerm.toLowerCase().trim();
+
+  this.filteredTickets = this.tickets.filter(ticket => {
+    const idMatch = ticket.ticketNo?.toString().toLowerCase().includes(term);
+    const subjectMatch = ticket.subject?.toLowerCase().includes(term);
+    const descMatch = ticket.description?.toLowerCase().includes(term);
+
+    return idMatch || subjectMatch || descMatch;
+  });
+
+  this.currentPage = 1;
+  this.cd.markForCheck();
+}
+
+  currentPage = 1;
+itemsPerPage = 5;
+
+get paginatedTickets(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  return this.filteredTickets.slice(
+    startIndex,
+    startIndex + this.itemsPerPage
+  );
+}
+
+get totalPages(): number {
+  return Math.ceil(this.filteredTickets.length / this.itemsPerPage);
+}
+
+changePage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.cd.markForCheck();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.cd.markForCheck();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.cd.markForCheck();
+  }
+}
 
   openAttachmentModal(ticket: any): void {
     const imageAttachments = ticket.attachments.filter((a:any) => this.isImageAttachment(a));

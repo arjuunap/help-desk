@@ -1,0 +1,108 @@
+<div class="page">
+
+  <div class="page-header">
+    <h2>Agents</h2>
+  </div>
+
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Search agent..."
+      [(ngModel)]="searchTerm"
+      (input)="filterAgents()">
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Agent</th>
+        <th>Email</th>
+        <th>Assigned Staffs</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let agent of filteredAgents; let i = index">
+
+        <td>{{ i + 1 }}</td>
+
+        <td>{{ agent.fullName }}</td>
+
+        <td>{{ agent.email }}</td>
+
+        <td>
+
+          <button
+            class="btn-primary"
+            (click)="openAssignModal(agent)">
+            Assign Staff
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+  </table>
+
+</div>
+
+
+<!-- Assign Modal -->
+
+<div
+  class="modal-overlay"
+  *ngIf="showAssignModal"
+  (click)="closeAssignModal()">
+
+  <div
+    class="modal"
+    (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+
+      <h3>
+        Assign Staff
+      </h3>
+
+      <button
+        class="close-btn"
+        (click)="closeAssignModal()">
+        ×
+      </button>
+
+    </div>
+
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search staff..."
+      [(ngModel)]="staffSearch"
+      (input)="filterStaffs()">
+
+    <div class="user-list">
+
+      <div
+        class="user-item"
+        *ngFor="let staff of filteredStaffs">
+
+        <div>
+          <strong>{{ staff.fullName }}</strong>
+          <div>{{ staff.email }}</div>
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="assignStaff(staff.id)">
+          Assign
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

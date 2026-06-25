@@ -7,74 +7,71 @@
 
     <nav class="nav">
 
-  <div class="nav-section">
-    <p class="nav-section-title">Main</p>
+      <div class="nav-section">
+        <p class="nav-section-title">Main</p>
 
-    <a class="nav-item"
-       routerLink="/main-layout/home"
-       routerLinkActive="active">
-      <span class="nav-icon" data-icon="dashboard"></span>
-      <span class="nav-label">Dashboard</span>
-    </a>
+        <a class="nav-item" routerLink="/main-layout/home" routerLinkActive="active">
+          <span class="nav-icon" data-icon="dashboard"></span>
+          <span class="nav-label">Dashboard</span>
+        </a>
 
-    <a class="nav-item"
-       routerLink="/main-layout/ticket-list"
-       routerLinkActive="active">
-      <span class="nav-icon" data-icon="ticket"></span>
-      <span class="nav-label">All Tickets</span>
-      <span class="nav-badge badge-danger">14</span>
-    </a>
+        <a class="nav-item" routerLink="/main-layout/ticket-list" routerLinkActive="active">
+          <span class="nav-icon" data-icon="ticket"></span>
+          <span class="nav-label">All Tickets</span>
+          <span class="nav-badge badge-danger">{{totalTickets}}</span>
+        </a>
 
-    <a class="nav-item"
-       routerLink="/sla-breaches"
-       routerLinkActive="active">
-      <span class="nav-icon" data-icon="alert"></span>
-      <span class="nav-label">SLA Breaches</span>
-      <span class="nav-badge badge-danger">3</span>
-    </a>
+        <a class="nav-item" routerLink="/sla-breaches" routerLinkActive="active">
+          <span class="nav-icon" data-icon="alert"></span>
+          <span class="nav-label">SLA Breaches</span>
+          <span class="nav-badge badge-danger">3</span>
+        </a>
 
-    <a class="nav-item"
-       routerLink="/my-queue"
-       routerLinkActive="active">
-      <span class="nav-icon" data-icon="queue"></span>
-      <span class="nav-label">My Queue</span>
-      <span class="nav-badge badge-neutral">6</span>
-    </a>
+        <a class="nav-item" routerLink="/my-queue" routerLinkActive="active">
+          <span class="nav-icon" data-icon="queue"></span>
+          <span class="nav-label">My Queue</span>
+          <span class="nav-badge badge-neutral">6</span>
+        </a>
 
-  </div>
 
-  <div class="nav-section">
-    <p class="nav-section-title">Manage</p>
 
-    <!-- <a class="nav-item"
+
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-section-title">Manage</p>
+
+        <!-- <a class="nav-item"
        routerLink="/agents"
        routerLinkActive="active">
       <span class="nav-label">Agents</span>
     </a> -->
 
-    <!-- <a class="nav-item" routerLink="/main-layout/ticket-list" routerLinkActive="active">
+        <!-- <a class="nav-item" routerLink="/main-layout/ticket-list" routerLinkActive="active">
       <span class="nav-label">Tickets</span>
 
     </a> -->
 
-    <a class="nav-item" routerLink="/main-layout/departments" routerLinkActive="active">
-      <span class="nav-label">Departments</span>
+        <a class="nav-item" routerLink="/main-layout/departments" routerLinkActive="active">
+          <span class="nav-label">Departments</span>
 
-    </a>
+        </a>
 
-    <a class="nav-item" routerLink="/main-layout/slas" routerLinkActive="active">
-      <span class="nav-label">slas</span>
+        <a class="nav-item" routerLink="/main-layout/slas" routerLinkActive="active">
+          <span class="nav-label">slas</span>
 
-    </a>
-    
+        </a>
 
-    <a class="nav-item"`  
-       routerLink="/main-layout/categories"
-       routerLinkActive="active">
-      <span class="nav-label">Categories</span>
-    </a>
+        <a class="nav-item" routerLink="/main-layout/get-agent-staffs" routerLinkActive="active">
+          <span class="nav-label">Staffs</span>
+        </a>
 
-    <!-- <a class="nav-item"
+
+        <a class="nav-item" ` routerLink="/main-layout/categories" routerLinkActive="active">
+          <span class="nav-label">Categories</span>
+        </a>
+
+        <!-- <a class="nav-item"
        routerLink="/knowledge-base"
        routerLinkActive="active">
       <span class="nav-label">Knowledge Base</span>
@@ -85,11 +82,11 @@
        routerLinkActive="active">
       <span class="nav-label">Reports</span>
     </a>   -->
-    
 
-  </div>
 
-  <!-- <div class="nav-section">
+      </div>
+
+      <!-- <div class="nav-section">
     <p class="nav-section-title">System</p>
 
     <a class="nav-item"
@@ -100,7 +97,7 @@
 
   </div> -->
 
-</nav>
+    </nav>
 
     <div class="sidebar-footer">
       <button class="logout-btn" type="button" (click)="logout()">
@@ -122,4 +119,3 @@
     <router-outlet></router-outlet>
   </main>
 </div>
-

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +19,10 @@ export class DepartmentsServices {private apiUrl = environment.apiUrl + '/depart
 
   createDepartment(department: any) {
   return this.http.post<any>(this.apiUrl + '/add-department', department);
+}
+
+assignManager(departmentId: number, managerId: number) {
+  return this.http.patch<any>(environment.apiUrl + `/admin/assign-department-manager/${departmentId}`, managerId);
 }
 
   

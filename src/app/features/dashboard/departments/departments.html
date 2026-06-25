@@ -22,8 +22,10 @@
           <th>#</th>
           <th>Name</th>
           <th>Description</th>
+          <th>Assignee</th>
           <th>Status</th>
           <th>Actions</th>
+          
         </tr>
       </thead>
       <tbody>
@@ -33,13 +35,60 @@
            
             {{ department.name }}
           </td>
-          <td class="col-desc">{{ department.description || '—' }}</td>
-          <td class="col-status">
-            <span class="status-badge" [ngClass]="department.isActive ? 'status-active' : 'status-inactive'">
-              <span class="status-dot"></span>
-              {{ department.isActive ? 'Active' : 'Inactive' }}
-            </span>
-          </td>
+          <td class="col-desc">
+  {{ department.description || '—' }}
+</td>
+
+<td class="col-assignee">
+
+  <div class="assignee-wrapper">
+
+    <ng-container *ngIf="department.managerName; else assignBtn">
+
+      <span class="assignee-name">
+        {{ department.managerName }}
+      </span>
+
+      <button
+        type="button"
+        class="btn-edit-assignee"
+        (click)="openAssignModal(department)"
+        title="Change Assignee">
+
+        <svg width="14" height="14" viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+        </svg>
+
+      </button>
+
+    </ng-container>
+
+    <ng-template #assignBtn>
+
+      <button
+        type="button"
+        class="btn-assign"
+        (click)="openAssignModal(department)">
+        Assign
+      </button>
+
+    </ng-template>
+
+  </div>
+
+</td>
+
+<td class="col-status">
+  <span class="status-badge"
+        [ngClass]="department.isActive ? 'status-active' : 'status-inactive'">
+    <span class="status-dot"></span>
+    {{ department.isActive ? 'Active' : 'Inactive' }}
+  </span>
+</td>
           <td class="col-actions">
             <button class="btn-delete" (click)="deleteDepartment(department)" title="Delete department">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -139,4 +188,56 @@
 
     </form>
   </div>
+</div>
+
+
+<div class="modal-backdrop"
+     *ngIf="showAssignModal"
+     (click)="closeAssignModal()">
+
+  <div class="modal"
+       (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+
+      <h3>Assign Department Manager</h3>
+
+      <button
+        class="close-btn"
+        (click)="closeAssignModal()">
+        ✕
+      </button>
+
+    </div>
+
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search users..."
+      [(ngModel)]="searchTerm"
+      (input)="searchUsers()">
+
+    <div class="user-list">
+
+      <div
+        *ngFor="let user of filteredUsers"
+        class="user-item">
+
+        <div>
+          <strong>{{ user.name }}</strong>
+          <div>{{ user.email }}</div>
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="assignManager(user.id)">
+          Assign
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

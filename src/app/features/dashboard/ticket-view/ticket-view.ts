@@ -40,7 +40,8 @@ export class TicketDetailComponent implements OnInit {
   myAvatarColor = '#2563eb';
   private nextCommentId = 1;
   currentTicketId = 0;
-  selectedFiles: File[] = [];
+  selectedFiles: any[] = [];
+  cd: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -93,18 +94,22 @@ export class TicketDetailComponent implements OnInit {
   }
 
   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    console.log(input.files);
-    if (!input.files) {
-      return;
-    }
 
-    this.selectedFiles = Array.from(input.files);
-    console.log(this.selectedFiles);
+  const input = event.target as HTMLInputElement;
 
-
+  if (!input.files) {
+    return;
   }
 
+  this.selectedFiles = Array.from(input.files).map(file => ({
+    file,
+    preview: URL.createObjectURL(file),
+    isImage: file.type.startsWith('image/'),
+    isVideo: file.type.startsWith('video/')
+  }));
+
+  this.cdr.markForCheck();
+}
 
   fetchTicket(id: number): void {
     this.loading = true;
@@ -145,9 +150,9 @@ export class TicketDetailComponent implements OnInit {
 
 
 
-    this.selectedFiles.forEach(file => {
-      formData.append('files', file);
-    });
+    this.selectedFiles.forEach(item => {
+  formData.append('files', item.file);
+});
 
     this.commentService
       .addComment(this.currentTicketId, formData)
@@ -249,6 +254,11 @@ export class TicketDetailComponent implements OnInit {
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return `${Math.floor(diff / 86400)}d ago`;
   }
+
+  removeFile(index: number): void {
+  this.selectedFiles.splice(index, 1);
+  this.cdr.markForCheck();
+}
 
 
 

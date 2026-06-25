@@ -2,17 +2,23 @@ import {
   Component,
   OnInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  EventEmitter,
+  Output
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TicketServices } from '../../../core/services/tickets/ticket-services';
 import { Router } from '@angular/router';
 import { AuthServices } from '../../../core/services/auth/auth-services';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
+
+import { AgentDashbaord } from '../agent-dashbaord/agent-dashbaord';
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule,AgentDashbaord],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -34,104 +40,179 @@ export class Home implements OnInit {
   loadingLogs = false;
   errorMessageLogs = '';
   selectedTicket: any = null;
-showAssignModal = false;
-assigneeId:number = 0
-ticketId:number = 0
+  showAssignModal = false;
+  assigneeId: number = 0
+  ticketId: number = 0
 
-users: any[] = [];
-filteredUsers: any[] = [];
+
+  users: any[] = [];
+  filteredUsers: any[] = [];
+
+
+  showStatusModal = false;
+pendingTicket: any = null;
+pendingStatus = '';
+statusReason = '';
+
+currentLogPage = 1;
+logPageSize = 5;
 
   constructor(
     private ticketService: TicketServices,
     private cd: ChangeDetectorRef,
     private route: Router,
-    private userServices : AuthServices
+    private userServices: AuthServices
   ) { }
 
   ngOnInit(): void {
     this.fetchTickets();
     this.fetchLogs();
   }
-
-  updateStatus(ticket: any, status: string): void {
-
-  const oldStatus = ticket.status;
-
-  ticket.status = status; // instant UI update
-
-  this.ticketService
-      .updateTicketStatus(ticket.ticketId, status)
-      .subscribe({
-        next: () => {
-          this.cd.markForCheck();
-        },
-        error: () => {
-          ticket.status = oldStatus; // revert if API fails
-          this.cd.markForCheck();
-        }
+  copyTicketId(ticketNo: string): void {
+    navigator.clipboard.writeText(ticketNo).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Copied!',
+        text: ticketNo,
+        timer: 1200,
+        showConfirmButton: false
       });
-}
-  
+    });
+  }
+get paginatedLogs(): any[] {
 
+  const start =
+    (this.currentLogPage - 1) * this.logPageSize;
 
-openAssignModal(ticket: any): void {
-  this.selectedTicket = ticket;
-  this.showAssignModal = true;
-  console.log('ticket',this.selectedTicket)
+  const end =
+    start + this.logPageSize;
 
-  this.userServices.getUsers().subscribe({
-    next: (users) => {
-      this.users = users;
-      this.filteredUsers = users;
-    }
-  });
+  return this.logs.slice(start, end);
 }
 
-searchUsers(): void {
-  const term = this.searchTerm.toLowerCase().trim();
-
-  this.filteredUsers = this.users.filter(user =>
-    user.name?.toLowerCase().includes(term) ||
-    user.email?.toLowerCase().includes(term)
+get totalLogPages(): number {
+  return Math.ceil(
+    this.logs.length / this.logPageSize
   );
 }
 
-assignAgent(userId: number): void {
+changeLogPage(page: number): void {
 
-  
-    
-    this.assigneeId = userId
-    console.log(this.selectedTicket.ticketId,this.assigneeId)
-    
-  
+  if (
+    page < 1 ||
+    page > this.totalLogPages
+  ) {
+    return;
+  }
 
-  this.ticketService.assignAgent( this.selectedTicket.ticketId,
-  this.assigneeId).subscribe({
-    next: (res) => {
-      console.log('sed',this.assigneeId,this.selectedTicket.ticketId)
-       console.log('res',res)
-      this.selectedTicket.assigneeId = userId;
-      this.fetchTickets(); 
-      const selectedUser = this.users.find(
-        u => u.id === userId
-      );
-     
-      this.cd.detectChanges();
-      this.cd.markForCheck()
+  this.currentLogPage = page;
 
-      this.selectedTicket.assigneeName = selectedUser?.name;
+  this.cd.markForCheck();
+}
+  confirmStatusUpdate(): void {
 
-      this.closeAssignModal();
+  if (!this.pendingTicket) {
+    return;
+  }
+
+  const payload = {
+    ticketId: this.pendingTicket.ticketId,
+    newStatus: this.pendingStatus,
+    reason: this.statusReason
+  };
+
+  const previousStatus = this.pendingTicket.status;
+
+  this.pendingTicket.status = this.pendingStatus;
+
+  this.ticketService.updateTicketStatus(
+    this.pendingTicket.ticketId,
+    payload
+  ).subscribe({
+    next: () => {
+      this.showStatusModal = false;
+      this.fetchTickets();
+      this.cd.markForCheck();
+    },
+    error: () => {
+      this.pendingTicket.status = previousStatus;
+      this.cd.markForCheck();
     }
   });
 }
 
+openStatusModal(ticket: any, status: string): void {
 
-closeAssignModal(): void {
-  this.showAssignModal = false;
-  this.selectedTicket = null;
-  this.searchTerm = '';
+  if (ticket.status === status) {
+    return;
+  }
+
+  this.pendingTicket = ticket;
+  this.pendingStatus = status;
+  this.statusReason = '';
+  this.showStatusModal = true;
 }
+
+
+
+  openAssignModal(ticket: any): void {
+    this.selectedTicket = ticket;
+    this.showAssignModal = true;
+    console.log('ticket', this.selectedTicket)
+
+    this.userServices.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.filteredUsers = users;
+      }
+    });
+  }
+
+  searchUsers(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+
+    this.filteredUsers = this.users.filter(user =>
+      user.name?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term)
+    );
+  }
+
+  assignAgent(userId: number): void {
+
+
+
+    this.assigneeId = userId
+    console.log(this.selectedTicket.ticketId, this.assigneeId)
+
+
+
+    this.ticketService.assignAgent(this.selectedTicket.ticketId,
+      this.assigneeId).subscribe({
+        next: (res) => {
+          console.log('sed', this.assigneeId, this.selectedTicket.ticketId)
+          console.log('res', res)
+          this.selectedTicket.assigneeId = userId;
+          this.fetchTickets();
+          const selectedUser = this.users.find(
+            u => u.id === userId
+          );
+
+          this.cd.detectChanges();
+          this.cd.markForCheck()
+
+          this.selectedTicket.assigneeName = selectedUser?.name;
+
+          this.closeAssignModal();
+        }
+      });
+  }
+
+
+  closeAssignModal(): void {
+    this.showAssignModal = false;
+    this.selectedTicket = null;
+    this.searchTerm = '';
+  }
 
   fetchTickets(): void {
 
@@ -141,7 +222,7 @@ closeAssignModal(): void {
     this.ticketService.getTickets().subscribe({
       next: (data) => {
         this.tickets = data;
-        this.totalTickets = data.length;
+        this.totalTickets = data.length
 
         this.filteredTickets = [...data];
 
@@ -165,7 +246,8 @@ closeAssignModal(): void {
     this.ticketService.getLogs().subscribe({
       next: (data) => {
         this.logs = data;
-        console.log('data',data)
+        this.logs = data;
+        console.log('data', data)
         this.totalLogs = data.length;
 
         this.filteredLogs = [...data];
@@ -184,36 +266,36 @@ closeAssignModal(): void {
   }
 
   addTicket(): void {
-  this.route.navigate(['/main-layout/ticket-add']);
-}
-
-
-getActivityDotClass(action: string): string {
-
-  switch (action?.toUpperCase()) {
-
-    case 'CREATED':
-      return 'dot-green';
-
-    case 'ASSIGNED':
-      return 'dot-blue';
-
-    case 'UPDATED':
-      return 'dot-purple';
-
-    case 'RESOLVED':
-      return 'dot-green';
-
-    case 'CLOSED':
-      return 'dot-orange';
-
-    case 'ESCALATED':
-      return 'dot-red';
-
-    default:
-      return 'dot-blue';
+    this.route.navigate(['/main-layout/ticket-add']);
   }
-}
+
+
+  getActivityDotClass(action: string): string {
+
+    switch (action?.toUpperCase()) {
+
+      case 'CREATED':
+        return 'dot-green';
+
+      case 'ASSIGNED':
+        return 'dot-blue';
+
+      case 'UPDATED':
+        return 'dot-purple';
+
+      case 'RESOLVED':
+        return 'dot-green';
+
+      case 'CLOSED':
+        return 'dot-orange';
+
+      case 'ESCALATED':
+        return 'dot-red';
+
+      default:
+        return 'dot-blue';
+    }
+  }
 
   get paginatedTickets(): any[] {
 
@@ -265,8 +347,8 @@ getActivityDotClass(action: string): string {
   }
 
   getAssigneeName(ticket: any): string {
-  return ticket.assignee?.fullName || 'Unassigned';
-}
+    return ticket.assignee?.fullName || 'Unassigned';
+  }
 
   getAssigneeInitials(ticket: any): string {
 
@@ -377,4 +459,29 @@ getActivityDotClass(action: string): string {
 
     return `${Math.floor(diff / 86400)}d ago`;
   }
+
+  filterTickets(): void {
+
+  if (!this.searchTerm.trim()) {
+    this.filteredTickets = [...this.tickets];
+    this.currentPage = 1;
+    this.cd.markForCheck();
+    return;
+  }
+
+  const term = this.searchTerm.toLowerCase().trim();
+
+  this.filteredTickets = this.tickets.filter(ticket =>
+    ticket.ticketNo?.toLowerCase().includes(term) ||
+    ticket.subject?.toLowerCase().includes(term) ||
+    ticket.description?.toLowerCase().includes(term) ||
+    ticket.status?.toLowerCase().includes(term) ||
+    ticket.priority?.toLowerCase().includes(term) ||
+    ticket.assigneeName?.toLowerCase().includes(term)
+  );
+
+  this.currentPage = 1;
+  this.cd.markForCheck();
+}
+
 }

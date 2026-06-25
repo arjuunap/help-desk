@@ -24,6 +24,7 @@ export class AuthServices {
   getUsers() {
   return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff`);
 }
+
   googlelogout() {
     localStorage.removeItem('token');
     window.location.href = '/login';
@@ -62,5 +63,21 @@ export class AuthServices {
   UserDetails() {
     return this.http.get(this.apiUrl + '/me');
   }
+  registerUser(data: any) {
+    return this.http.post(this.apiUrl + '/register', data);
+  }
 
+
+getUserId(): number {
+
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return 0;
+  }
+
+  const decodedToken = this.jwtHelper.decodeToken(token);
+
+  return decodedToken.userId;
+}
 }

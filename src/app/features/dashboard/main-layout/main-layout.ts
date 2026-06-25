@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthServices } from '../../../core/services/auth/auth-services';
+import { TicketServices } from '../../../core/services/tickets/ticket-services';
 
 interface NavItem {
   label: string;
@@ -23,14 +24,17 @@ export class MainLayoutComponent {
   constructor(
     private authServices: AuthServices,
     private router: Router,
-    private cd : ChangeDetectorRef
+    private cd : ChangeDetectorRef,
+    private ticketServices : TicketServices
   ) { }
+  totalTickets : number = 0
   currentUser :any = {
     initials: '',
     name: '',
     role: ''
   };
   ngOnInit(): void {
+    this.fetchTicketCount();
   this.authServices.UserDetails().subscribe({
     next: (res: any) => {
       console.log(res)
@@ -50,14 +54,27 @@ export class MainLayoutComponent {
       };
       this.cd.detectChanges();
 
-      console.log(this.currentUser);
+      // console.log(this.currentUser);
     },
     error: (err) => {
       console.error(err);
     }
   });
 }
+ fetchTicketCount():void{
 
+  this.ticketServices.getTickets().subscribe({
+    next: (data: any) => {
+      this.totalTickets = data.length;
+      this.cd.detectChanges();
+
+      console.log(this.totalTickets);
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+ }
  
 
   

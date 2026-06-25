@@ -344,3 +344,35 @@
 .image-thumb { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; background-color: #f1f5f9; }
 .image-thumb-name { font-size: 13px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 .modal-empty-state { text-align: center; color: #64748b; padding: 40px; font-size: 15px; font-weight: 500; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}

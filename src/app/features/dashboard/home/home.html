@@ -9,7 +9,7 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" placeholder="Search tickets, users…" />
+                <input type="text" placeholder="Search tickets" [(ngModel)]="searchTerm" (input)="filterTickets()" />
             </div>
             <button class="btn-new-ticket" (click)="addTicket()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -78,7 +78,8 @@
             <tbody>
 
                 <tr *ngFor="let ticket of paginatedTickets">
-                    <td class="col-id">
+                    <td class="col-id" class="ticket-no copyable"
+                        (click)="$event.stopPropagation(); copyTicketId(ticket.ticketNo)" title="Click to copy">
                         <a class="ticket-link">
                             #{{ ticket.ticketNo }}
                         </a>
@@ -96,7 +97,7 @@
 
                     <td>
                         <select class="status-select" [ngModel]="ticket.status"
-                            (ngModelChange)="updateStatus(ticket, $event)" [ngClass]="getStatusClass(ticket.status)">
+                            (ngModelChange)="openStatusModal(ticket, $event)" [ngClass]="getStatusClass(ticket.status)">
 
                             <option value="OPEN">OPEN</option>
                             <option value="IN_PROGRESS">IN PROGRESS</option>
@@ -119,9 +120,9 @@
                         <ng-container *ngIf="ticket.assigneeId; else assignAgent">
 
                             <div class="assignee-display">
-                                <div class="avatar">
+                                <!-- <div class="avatar">
                                     {{ getAssigneeInitials(ticket) }}
-                                </div>
+                                </div> -->
 
                                 <span>{{ getAssigneeName(ticket) }}</span>
 
@@ -198,8 +199,7 @@
 
             <ul class="activity-list">
 
-                <li class="activity-item" *ngFor="let log of logs">
-
+<li class="activity-item" *ngFor="let log of paginatedLogs">
                     <span class="activity-dot" [ngClass]="getActivityDotClass(log.action)">
                     </span>
 
@@ -223,6 +223,36 @@
                 </li>
 
             </ul>
+
+            <div
+  class="pagination"
+  *ngIf="totalLogPages > 1">
+
+  <button
+    class="page-btn"
+    (click)="changeLogPage(currentLogPage - 1)"
+    [disabled]="currentLogPage === 1">
+
+    Previous
+
+  </button>
+
+  <span class="page-info">
+    Page {{ currentLogPage }}
+    of
+    {{ totalLogPages }}
+  </span>
+
+  <button
+    class="page-btn"
+    (click)="changeLogPage(currentLogPage + 1)"
+    [disabled]="currentLogPage === totalLogPages">
+
+    Next
+
+  </button>
+
+</div>
         </div>
 
         <!-- Agent Workload -->
@@ -337,3 +367,33 @@
     </div>
 
 </div>
+
+<div class="modal-overlay" *ngIf="showStatusModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <h3>Status Update Reason</h3>
+        </div>
+
+        <textarea [(ngModel)]="statusReason" rows="4" placeholder="Enter reason for status change..."
+            class="search-input">
+    </textarea>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:15px;">
+
+            <button class="btn-secondary" (click)="showStatusModal=false">
+                Cancel
+            </button>
+
+            <button class="btn-primary" [disabled]="!statusReason.trim()" (click)="confirmStatusUpdate()">
+                Update
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<app-agent-dashbaord></app-agent-dashbaord>

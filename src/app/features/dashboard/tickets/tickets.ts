@@ -16,7 +16,7 @@ import { DepartmentsServices } from '../../../core/services/departments/departme
 import { SlaPolicyServices } from '../../../core/services/sla-policy/sla-policy-services';
 import { CategoryServices } from '../../../core/services/category/category-services';
 import { ViewChild, ElementRef } from '@angular/core';
-
+import Swal from 'sweetalert2';
 
 interface PriorityOption {
   value: Priority;
@@ -81,6 +81,9 @@ export class RegisterTicketComponent implements OnInit {
 
   selectedParent: any = null;
   selectedSubCategory: any = null;
+
+  ticketData : any;
+  ticketNo : string = "";
 
   constructor(
     private fb: FormBuilder,
@@ -264,11 +267,22 @@ export class RegisterTicketComponent implements OnInit {
       }))
       .subscribe({
         next: (res) => {
-          console.log(res)
+  console.log(res);
 
-          this.submitSuccess = true;
-          this.resetForm();
-        },
+  this.ticketData = res;
+  this.ticketNo = this.ticketData.ticketNo;
+  console.log(this.ticketNo)
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Ticket Created Successfully',
+    html: `<strong>Ticket ID:</strong> ${this.ticketNo}`,
+    confirmButtonText: 'OK'
+  });
+
+  this.submitSuccess = true;
+  this.resetForm();
+},
         error: (err) => {
           this.submitError = err?.error?.message || 'Failed to submit ticket. Please try again.';
         }
@@ -278,7 +292,8 @@ export class RegisterTicketComponent implements OnInit {
   resetForm(): void {
 
     this.ticketForm.reset({
-      subject: '',
+      
+      subject:'',
       description: '',
       priority: '',
       channel: '',

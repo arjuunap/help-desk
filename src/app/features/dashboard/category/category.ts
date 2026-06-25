@@ -37,13 +37,13 @@ export class CategoryList implements OnInit {
 
       parentId: [null],
 
-      userId: [null, Validators.required],
+      userId: [null],
 
-      slaPolicyId: [null, Validators.required],   
+      slaPolicyId: [null],
 
       name: ['', [Validators.required, Validators.maxLength(60)]],
 
-      description: ['', [Validators.required, Validators.maxLength(300)]]
+      description: ['', Validators.maxLength(300)]
     });
   }
 
@@ -132,7 +132,7 @@ export class CategoryList implements OnInit {
       this.closeModal();
     }
   }
-  
+
 
   get name() {
     return this.categoryForm.get('name');

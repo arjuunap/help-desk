@@ -9,15 +9,17 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  FormsModule
 } from '@angular/forms';
 import { DepartmentsServices } from '../../../core/services/departments/departments-services';
+import { AuthServices } from '../../../core/services/auth/auth-services';
 
 
 @Component({
   selector: 'app-department-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './departments.html',
   styleUrl: './departments.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,12 +35,20 @@ export class DepartmentListComponent implements OnInit {
   isSubmitting = false;
 
   departmentForm!: FormGroup;
+  selectedDepartment: any = null;
+  showAssignModal = false;
+
+  users: any[] = [];
+  filteredUsers: any[] = [];
+
+  searchTerm = '';
 
   constructor(
     private departmentService: DepartmentsServices,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private authServices: AuthServices
+  ) { }
 
   ngOnInit(): void {
     this.departmentForm = this.fb.group({
@@ -48,6 +58,36 @@ export class DepartmentListComponent implements OnInit {
 
     this.loadDepartments();
   }
+  openAssignModal(department: any): void {
+
+    this.selectedDepartment = department;
+    this.showAssignModal = true;
+
+    this.authServices.getUsers().subscribe({
+      next: (res) => {
+        this.users = res;
+        console.log('users', res)
+        this.filteredUsers = res;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  closeAssignModal(): void {
+    this.showAssignModal = false;
+    this.selectedDepartment = null;
+    this.searchTerm = '';
+  }
+
+  searchUsers(): void {
+
+    const term = this.searchTerm.toLowerCase();
+
+    this.filteredUsers = this.users.filter(user =>
+      user.name?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term)
+    );
+  }
 
   loadDepartments(): void {
     this.loading = true;
@@ -55,6 +95,7 @@ export class DepartmentListComponent implements OnInit {
     this.departmentService.getDepartments().subscribe({
       next: (res) => {
         this.departments = res;
+        console.log('department', res)
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -106,7 +147,7 @@ export class DepartmentListComponent implements OnInit {
       }
     });
   }
-  deleteDepartment(departmentId: any){
+  deleteDepartment(departmentId: any) {
     this.isSubmitting = true;
     // this.departmentService.deleteDepartment(departmentId).subscribe({
     //   next: (res) => {
@@ -118,5 +159,32 @@ export class DepartmentListComponent implements OnInit {
     //     this.cdr.markForCheck();
     //   }
     // });
+  }
+
+  assignManager(userId: number): void {
+
+    const departmentId = this.selectedDepartment.departmentId;
+
+    this.departmentService
+      .assignManager(departmentId, userId)
+      .subscribe({
+        next: () => {
+
+          const user = this.users.find(
+            x => x.id === userId
+          );
+
+          this.selectedDepartment.managerId = userId;
+          this.selectedDepartment.managerName =
+            user?.fullName || user?.name;
+
+          this.closeAssignModal();
+
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Assign manager failed', err);
+        }
+      });
   }
 }
