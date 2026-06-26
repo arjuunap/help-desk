@@ -1,0 +1,58 @@
+<div class="auth-container">
+  <div class="auth-card">
+
+    <h2>Create Account</h2>
+    
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+      <div class="input-group">
+        <label>FirstName</label>
+        <input
+          type="text"
+          formControlName="firstName"
+          placeholder="Enter username">
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Enter email">
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Enter password">
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Confirm password">
+      </div>
+
+      <button
+        class="btn-register"
+        type="submit"
+        [disabled]="registerForm.invalid">
+        Register
+      </button>
+
+      <!-- <button
+        class="btn-login"
+        type="button"
+        routerLink="/login">
+        Login
+      </button> -->
+
+    </form>
+
+  </div>
+</div>

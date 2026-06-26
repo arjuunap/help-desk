@@ -10,24 +10,28 @@ import { Router } from '@angular/router';
 })
 export class AgentServices {
   private apiUrl = environment.apiUrl;
-  
+
 
   constructor(
     private http: HttpClient,
-    private router : Router
+    private router: Router
   ) { }
 
-  
 
 
-   getAgentStaffs(agentId: number) {
-  return this.http.get(
-    `${this.apiUrl}/auth/fetch-staffs/${agentId}`
-  );
-}
-assignAgent(agentId: number,staffId: number){
-  return this.http.patch(`${this.apiUrl}/admin/assign-agent`, {agentId,staffId});
-}
-   
+
+  getAgentStaffs(agentId: number) {
+    return this.http.get(
+      `${this.apiUrl}/auth/fetch-staffs/${agentId}`
+    );
+  }
+  assignAgent(agentId: number, staffId: number) {
+    return this.http.patch(`${this.apiUrl}/admin/assign-agent`, { agentId, staffId });
+  }
+
+  getAgentWorkLoad(){
+    return this.http.get(`${this.apiUrl}/admin/agent-workload`)
+  }
+
 
 }

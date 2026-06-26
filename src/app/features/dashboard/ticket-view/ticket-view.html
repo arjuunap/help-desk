@@ -100,11 +100,11 @@
         </div>
         <div class="people-row">
           <span class="people-label">Reporter</span>
-          <span class="detail-value">User #{{ ticket.reporterId }}</span>
+          <span class="detail-value">{{ ticket.reporterName }}</span>
         </div>
         <div class="people-row">
           <span class="people-label">Assignee</span>
-          <span class="detail-value">{{ ticket.assigneeId ? '#' + ticket.assigneeId : '—' }}</span>
+          <span class="detail-value">{{ ticket.assigneeId ? ticket.assignee.fullName : '—' }}</span>
         </div>
       </div>
 
@@ -118,11 +118,11 @@
         </div>
         <div class="people-row">
           <span class="people-label">Department</span>
-          <span class="detail-value">#{{ ticket.departmentId }}</span>
+          <span class="detail-value">{{ ticket.departmentName }}</span>
         </div>
         <div class="people-row">
           <span class="people-label">SLA Policy</span>
-          <span class="detail-value">#{{ ticket.slaPolicyId }}</span>
+          <span class="detail-value">{{ ticket.slaPolicyName }}</span>
         </div>
       </div>
 

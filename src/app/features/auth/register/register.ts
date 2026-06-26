@@ -37,7 +37,8 @@ export class Register implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: [''],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
+      role:['']
     });
   }
 
@@ -65,6 +66,7 @@ export class Register implements OnInit {
       email: formValue.email,
       phoneNumber: formValue.phoneNumber,
       password: formValue.password
+      
     };
 
     this.isSubmitting = true;

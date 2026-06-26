@@ -10,6 +10,8 @@ import { TicketDetailComponent } from './features/dashboard/ticket-view/ticket-v
 import { DepartmentListComponent } from './features/dashboard/departments/departments';
 import { SlaListComponent } from './features/dashboard/slas/slas';
 import { AgentStaffs } from './features/dashboard/agent-staffs/agent-staffs';
+import { RegisterAgentStaff } from './features/dashboard/add-agent-staff/add-agent-staff';
+import { Kb } from './features/dashboard/kb/kb/kb';
 
 
 export const routes: Routes = [
@@ -25,7 +27,9 @@ export const routes: Routes = [
         {path :'ticket-view/:ticketId',component : TicketDetailComponent}, 
         {path: 'departments',component : DepartmentListComponent} ,
         {path : 'slas',component : SlaListComponent}  ,
-        {path : 'get-agent-staffs',component: AgentStaffs} 
+        {path : 'get-agent-staffs',component: AgentStaffs} ,
+        {path :'add-agent-staff',component : RegisterAgentStaff},
+        {path : 'kb',component : Kb}
     ]}
 
 ];

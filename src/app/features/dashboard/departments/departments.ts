@@ -14,6 +14,7 @@ import {
 } from '@angular/forms';
 import { DepartmentsServices } from '../../../core/services/departments/departments-services';
 import { AuthServices } from '../../../core/services/auth/auth-services';
+import { AdminServices } from '../../../core/services/admin/admin-services';
 
 
 @Component({
@@ -47,7 +48,8 @@ export class DepartmentListComponent implements OnInit {
     private departmentService: DepartmentsServices,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private authServices: AuthServices
+    private adminServices: AdminServices,
+    private authServices : AuthServices
   ) { }
 
   ngOnInit(): void {

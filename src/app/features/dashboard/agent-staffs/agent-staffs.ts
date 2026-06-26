@@ -1,143 +1,91 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { AgentServices } from '../../../core/services/agent/agent-services';
-import { AuthServices } from '../../../core/services/auth/auth-services';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AuthServices } from '../../../core/services/auth/auth-services';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department?: string;
+  status?: string;
+  avatar?: string;
+}
 
 @Component({
-  selector: 'app-agent-staffs',
-  imports: [FormsModule,CommonModule],
+  selector: 'app-users-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './agent-staffs.html',
-  styleUrl: './agent-staffs.css',
+  styleUrls: ['./agent-staffs.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AgentStaffs {
-  constructor(private agentService: AgentServices,
-    private authServices : AuthServices,
-    private cd : ChangeDetectorRef
-  ){ 
-    this.agentId = this.authServices.getUserId();
-  }
- 
-  agentId : number;
+export class AgentStaffs implements OnInit {
+  users: User[] = [];
+  filteredUsers: User[] = [];
+  searchQuery = '';
+  selectedRole: string | null = null;
+  loading = true;
 
-  agents: any[] = [];
-filteredAgents: any[] = [];
+  constructor(
+    private userService: AuthServices,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-staffs: any[] = [];
-filteredStaffs: any[] = [];
-
-searchTerm = '';
-staffSearch = '';
-
-selectedAgent: any = null;
-
-showAssignModal = false;
-  ngOnInit(){
-    this.getAgentStaffs();
-    
-  }
-  getAgentStaffs(){
-    this.agentService.getAgentStaffs(this.agentId).subscribe({
-      next:(data)=>{
-        console.log("agent staffs",data);
-      }
-    })
-  }
-  assignAgent(agentId: number,staffId: number){
-    this.agentService.assignAgent(agentId,staffId).subscribe({
-      next:(data)=>{
-        console.log("agent assigned",data);
-      }
-    })
-    
-  }
-
-  filterAgents(): void {
-
-  const term =
-    this.searchTerm.toLowerCase().trim();
-
-  this.filteredAgents =
-    this.agents.filter(agent =>
-
-      agent.fullName
-        ?.toLowerCase()
-        .includes(term)
-
-      ||
-
-      agent.email
-        ?.toLowerCase()
-        .includes(term)
-    );
-}
-
-
-openAssignModal(agent: any): void {
-
-  this.selectedAgent = agent;
-
-  this.showAssignModal = true;
-
-  this.agentService
-    .getAgentStaffs(agent.id)
-    .subscribe({
-      next: (res: any) => {
-
-        this.staffs = res;
-
-        this.filteredStaffs = res;
-
-        this.cd.markForCheck();
+  ngOnInit(): void {
+    this.userService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        console.log('users',data)
+        this.filteredUsers = data;
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
-}
+  }
 
+  get uniqueRoles(): string[] {
+    return [...new Set(this.users.map(u => u.role).filter(Boolean))].sort();
+  }
 
-filterStaffs(): void {
-
-  const term =
-    this.staffSearch.toLowerCase();
-
-  this.filteredStaffs =
-    this.staffs.filter(staff =>
-
-      staff.fullName
-        ?.toLowerCase()
-        .includes(term)
-
-      ||
-
-      staff.email
-        ?.toLowerCase()
-        .includes(term)
-    );
-}
-
-
-assignStaff(staffId: number): void {
-
-  this.agentService
-    .assignAgent(
-      this.selectedAgent.id,
-      staffId
-    )
-    .subscribe({
-      next: () => {
-
-        this.closeAssignModal();
-
-      }
+  applyFilters(): void {
+    this.filteredUsers = this.users.filter(user => {
+      const q = this.searchQuery.toLowerCase();
+      const matchesSearch = q
+        ? user.name?.toLowerCase().includes(q) ||
+          user.email?.toLowerCase().includes(q) ||
+          user.department?.toLowerCase().includes(q)
+        : true;
+      const matchesRole = this.selectedRole
+        ? user.role === this.selectedRole
+        : true;
+      return matchesSearch && matchesRole;
     });
-}
+  }
 
-closeAssignModal(): void {
+  selectRole(role: string | null): void {
+    this.selectedRole = role;
+    this.applyFilters();
+  }
 
-  this.showAssignModal = false;
+  onSearch(): void {
+    this.applyFilters();
+  }
 
-  this.selectedAgent = null;
+  getInitials(name: string): string {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  }
 
-  this.staffSearch = '';
-}
-
+  getAvatarColor(name: string): string {
+    const colors = ['#1d4ed8', '#2563eb', '#1e40af', '#3b82f6', '#1d4ed8', '#1e3a8a'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
 }

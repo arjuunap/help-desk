@@ -21,6 +21,7 @@ export class AuthServices {
   }
 
 
+  
   getUsers() {
   return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff`);
 }
@@ -52,7 +53,7 @@ export class AuthServices {
 
     return this.jwtHelper.decodeToken(token);
   }
-
+  
   getRole(): string {
 
     const decodedToken = this.getDecodedToken();
@@ -63,6 +64,7 @@ export class AuthServices {
   UserDetails() {
     return this.http.get(this.apiUrl + '/me');
   }
+  
   registerUser(data: any) {
     return this.http.post(this.apiUrl + '/register', data);
   }

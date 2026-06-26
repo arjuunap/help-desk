@@ -119,6 +119,7 @@ export class TicketDetailComponent implements OnInit {
         this.ticket = data;
         this.loading = false;
         this.cdr.markForCheck();
+        console.log("Ticket", data)
       },
       error: (err) => {
         this.error = 'Failed to load ticket. Please try again.';

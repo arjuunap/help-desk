@@ -14,11 +14,12 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 import { AgentDashbaord } from '../agent-dashbaord/agent-dashbaord';
+import { AgentServices } from '../../../core/services/agent/agent-services';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule,AgentDashbaord],
+  imports: [CommonModule, FormsModule, AgentDashbaord],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,6 +44,10 @@ export class Home implements OnInit {
   showAssignModal = false;
   assigneeId: number = 0
   ticketId: number = 0
+  role: string = ''
+  
+  agentWorkload: any[] = []
+  totalAgentWorkload: number = 0
 
 
   users: any[] = [];
@@ -50,23 +55,32 @@ export class Home implements OnInit {
 
 
   showStatusModal = false;
-pendingTicket: any = null;
-pendingStatus = '';
-statusReason = '';
+  pendingTicket: any = null;
+  pendingStatus = '';
+  statusReason = '';
 
-currentLogPage = 1;
-logPageSize = 5;
+  currentLogPage = 1;
+  logPageSize = 5;
 
   constructor(
     private ticketService: TicketServices,
     private cd: ChangeDetectorRef,
     private route: Router,
-    private userServices: AuthServices
+    private userServices: AuthServices,
+    private agentServices: AgentServices
   ) { }
 
   ngOnInit(): void {
     this.fetchTickets();
     this.fetchLogs();
+    this.getRole();
+    this.fetchAgentWorkload();
+  }
+  getRole() {
+    this.role = this.userServices.getRole();
+  }
+  addAgentStaff() {
+    this.route.navigate(['/main-layout/add-agent-staff']);
   }
   copyTicketId(ticketNo: string): void {
     navigator.clipboard.writeText(ticketNo).then(() => {
@@ -79,79 +93,79 @@ logPageSize = 5;
       });
     });
   }
-get paginatedLogs(): any[] {
+  get paginatedLogs(): any[] {
 
-  const start =
-    (this.currentLogPage - 1) * this.logPageSize;
+    const start =
+      (this.currentLogPage - 1) * this.logPageSize;
 
-  const end =
-    start + this.logPageSize;
+    const end =
+      start + this.logPageSize;
 
-  return this.logs.slice(start, end);
-}
-
-get totalLogPages(): number {
-  return Math.ceil(
-    this.logs.length / this.logPageSize
-  );
-}
-
-changeLogPage(page: number): void {
-
-  if (
-    page < 1 ||
-    page > this.totalLogPages
-  ) {
-    return;
+    return this.logs.slice(start, end);
   }
 
-  this.currentLogPage = page;
+  get totalLogPages(): number {
+    return Math.ceil(
+      this.logs.length / this.logPageSize
+    );
+  }
 
-  this.cd.markForCheck();
-}
+  changeLogPage(page: number): void {
+
+    if (
+      page < 1 ||
+      page > this.totalLogPages
+    ) {
+      return;
+    }
+
+    this.currentLogPage = page;
+
+    this.cd.markForCheck();
+  }
   confirmStatusUpdate(): void {
 
-  if (!this.pendingTicket) {
-    return;
-  }
-
-  const payload = {
-    ticketId: this.pendingTicket.ticketId,
-    newStatus: this.pendingStatus,
-    reason: this.statusReason
-  };
-
-  const previousStatus = this.pendingTicket.status;
-
-  this.pendingTicket.status = this.pendingStatus;
-
-  this.ticketService.updateTicketStatus(
-    this.pendingTicket.ticketId,
-    payload
-  ).subscribe({
-    next: () => {
-      this.showStatusModal = false;
-      this.fetchTickets();
-      this.cd.markForCheck();
-    },
-    error: () => {
-      this.pendingTicket.status = previousStatus;
-      this.cd.markForCheck();
+    if (!this.pendingTicket) {
+      return;
     }
-  });
-}
 
-openStatusModal(ticket: any, status: string): void {
+    const payload = {
+      ticketId: this.pendingTicket.ticketId,
+      newStatus: this.pendingStatus,
+      reason: this.statusReason
+    };
 
-  if (ticket.status === status) {
-    return;
+    const previousStatus = this.pendingTicket.status;
+
+    this.pendingTicket.status = this.pendingStatus;
+
+    this.ticketService.updateTicketStatus(
+      this.pendingTicket.ticketId,
+      payload
+    ).subscribe({
+      next: () => {
+        this.showStatusModal = false;
+        this.fetchTickets();
+        this.cd.markForCheck();
+      },
+      error: () => {
+        this.pendingTicket.status = previousStatus;
+        this.cd.markForCheck();
+      }
+    });
   }
 
-  this.pendingTicket = ticket;
-  this.pendingStatus = status;
-  this.statusReason = '';
-  this.showStatusModal = true;
-}
+  openStatusModal(ticket: any, status: string): void {
+
+    if (ticket.status === status) {
+      return;
+    }
+
+    this.pendingTicket = ticket;
+    this.pendingStatus = status;
+    this.statusReason = '';
+    this.showStatusModal = true;
+  }
 
 
 
@@ -160,12 +174,20 @@ openStatusModal(ticket: any, status: string): void {
     this.showAssignModal = true;
     console.log('ticket', this.selectedTicket)
 
+
+
     this.userServices.getUsers().subscribe({
       next: (users) => {
         this.users = users;
+        console.log('users', users)
         this.filteredUsers = users;
+        this.cd.detectChanges()
       }
     });
+
+
+
+
   }
 
   searchUsers(): void {
@@ -176,6 +198,7 @@ openStatusModal(ticket: any, status: string): void {
       user.email?.toLowerCase().includes(term)
     );
   }
+
 
   assignAgent(userId: number): void {
 
@@ -237,6 +260,15 @@ openStatusModal(ticket: any, status: string): void {
         this.cd.markForCheck();
       }
     });
+  }
+
+  fetchAgentWorkload() {
+    this.agentServices.getAgentWorkLoad().subscribe({
+      next: (data) => {
+        console.log('dataaaaaaaa', data)
+        this.cd.markForCheck();
+      }
+    })
   }
 
   fetchLogs(): void {
@@ -462,26 +494,26 @@ openStatusModal(ticket: any, status: string): void {
 
   filterTickets(): void {
 
-  if (!this.searchTerm.trim()) {
-    this.filteredTickets = [...this.tickets];
+    if (!this.searchTerm.trim()) {
+      this.filteredTickets = [...this.tickets];
+      this.currentPage = 1;
+      this.cd.markForCheck();
+      return;
+    }
+
+    const term = this.searchTerm.toLowerCase().trim();
+
+    this.filteredTickets = this.tickets.filter(ticket =>
+      ticket.ticketNo?.toLowerCase().includes(term) ||
+      ticket.subject?.toLowerCase().includes(term) ||
+      ticket.description?.toLowerCase().includes(term) ||
+      ticket.status?.toLowerCase().includes(term) ||
+      ticket.priority?.toLowerCase().includes(term) ||
+      ticket.assigneeName?.toLowerCase().includes(term)
+    );
+
     this.currentPage = 1;
     this.cd.markForCheck();
-    return;
   }
-
-  const term = this.searchTerm.toLowerCase().trim();
-
-  this.filteredTickets = this.tickets.filter(ticket =>
-    ticket.ticketNo?.toLowerCase().includes(term) ||
-    ticket.subject?.toLowerCase().includes(term) ||
-    ticket.description?.toLowerCase().includes(term) ||
-    ticket.status?.toLowerCase().includes(term) ||
-    ticket.priority?.toLowerCase().includes(term) ||
-    ticket.assigneeName?.toLowerCase().includes(term)
-  );
-
-  this.currentPage = 1;
-  this.cd.markForCheck();
-}
 
 }
