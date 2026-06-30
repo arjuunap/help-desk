@@ -15,10 +15,14 @@ export class KbArticlesService {
   private apiUrl = environment.apiUrl + '/kb'
 
   getArticles(){
-    return this.http.get(`${this.apiUrl}/articles`)
+    return this.http.get<any[]>(`${this.apiUrl}/articles`)
   } 
 
+  createArticles(articleData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/create`, articleData);
+  }
 
+  
 }
 
 

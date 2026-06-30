@@ -4,13 +4,22 @@
   <div class="kb-header">
     <div class="kb-header-left">
       <h1 class="kb-title">Knowledge Base</h1>
-      <p class="kb-subtitle">Browse articles and guides to find answers quickly</p>
+      <p class="kb-subtitle">
+        Browse articles and guides to find answers quickly
+      </p>
     </div>
+
     <div class="kb-search-wrap">
       <svg class="search-icon" viewBox="0 0 20 20" fill="none">
-        <circle cx="9" cy="9" r="6" stroke="#94a3b8" stroke-width="1.6"/>
-        <path d="M13.5 13.5L17 17" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="9" cy="9" r="6" stroke="#94a3b8" stroke-width="1.6" />
+        <path
+          d="M13.5 13.5L17 17"
+          stroke="#94a3b8"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
       </svg>
+
       <input
         class="kb-search"
         type="text"
@@ -21,70 +30,189 @@
     </div>
   </div>
 
-  <!-- Category Tabs -->
+  <button class="create-btn" (click)="openModal()">
+    + Create Article
+  </button>
+
+  <!-- Categories -->
   <div class="kb-categories">
     <button
       class="cat-tab"
       [class.active]="selectedCategory === null"
       (click)="selectCategory(null)"
-    >All</button>
+    >
+      All
+    </button>
+
     <button
       *ngFor="let cid of uniqueCategories"
       class="cat-tab"
       [class.active]="selectedCategory === cid"
       (click)="selectCategory(cid)"
-    >{{ getCategoryLabel(cid) }}</button>
+    >
+      {{ getCategoryLabel(cid) }}
+    </button>
   </div>
 
   <!-- Loading -->
   <div *ngIf="loading" class="kb-loading">
     <div class="spinner"></div>
-    <span>Loading articles…</span>
+    <span>Loading articles...</span>
   </div>
 
   <!-- Empty -->
-  <div *ngIf="!loading && filteredArticles.length === 0" class="kb-empty">
-    <svg viewBox="0 0 48 48" fill="none" class="empty-icon">
-      <circle cx="24" cy="24" r="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
-      <path d="M16 24h16M16 30h10" stroke="#93c5fd" stroke-width="2" stroke-linecap="round"/>
-      <rect x="14" y="14" width="20" height="6" rx="2" fill="#bfdbfe"/>
-    </svg>
-    <p class="empty-title">No articles found</p>
-    <p class="empty-sub">Try a different search term or category</p>
+  <div
+    *ngIf="!loading && filteredArticles.length === 0"
+    class="kb-empty"
+  >
+    <h3>No Articles Found</h3>
+    <p>Try another search or category.</p>
   </div>
 
-  <!-- Article Grid -->
-  <div *ngIf="!loading && filteredArticles.length > 0" class="kb-grid">
-    <div class="article-card" *ngFor="let article of filteredArticles">
+  <!-- Articles -->
+  <div
+    *ngIf="!loading && filteredArticles.length > 0"
+    class="kb-grid"
+  >
+    <div
+      class="article-card"
+      *ngFor="let article of filteredArticles"
+    >
+
       <div class="card-top">
-        <span class="cat-badge">{{ getCategoryLabel(article.categoryId) }}</span>
-        <span class="status-badge" [class.published]="article.published">
+        <span class="cat-badge">
+          {{ getCategoryLabel(article.categoryId) }}
+        </span>
+
+        <span
+          class="status-badge"
+          [class.published]="article.published"
+        >
           {{ article.published ? 'Published' : 'Draft' }}
         </span>
       </div>
-      <h3 class="card-title">{{ article.title }}</h3>
-      <p class="card-preview">{{ getContentPreview(article.content) }}</p>
+
+      <h3 class="card-title">
+        {{ article.title }}
+      </h3>
+
+      <p class="card-preview">
+        {{ getContentPreview(article.content) }}
+      </p>
+
       <div class="card-footer">
         <span class="card-author">
-          <svg viewBox="0 0 16 16" fill="none" class="author-icon">
-            <circle cx="8" cy="5.5" r="2.5" stroke="#94a3b8" stroke-width="1.3"/>
-            <path d="M3 13c0-2.761 2.239-4 5-4s5 1.239 5 4" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
           {{ article.author }}
         </span>
+
         <button class="read-btn">
           Read
-          <svg viewBox="0 0 16 16" fill="none">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
         </button>
       </div>
+
     </div>
   </div>
 
-  <!-- Count -->
-  <div *ngIf="!loading && filteredArticles.length > 0" class="kb-count">
-    Showing {{ filteredArticles.length }} of {{ articles.length }} articles
+  <div
+    *ngIf="!loading && filteredArticles.length > 0"
+    class="kb-count"
+  >
+    Showing {{ filteredArticles.length }}
+    of {{ articles.length }} articles
+  </div>
+
+</div>
+
+<!-- Modal -->
+
+<div
+  class="modal-overlay"
+  *ngIf="showModal"
+  (click)="closeModal()"
+>
+
+  <div
+    class="modal"
+    (click)="$event.stopPropagation()"
+  >
+
+    <h2>Create Article</h2>
+
+    <div class="form-group">
+      <label>Title</label>
+
+      <input
+        type="text"
+        [(ngModel)]="newArticle.title"
+        placeholder="Article title"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Content</label>
+
+      <textarea
+        rows="6"
+        [(ngModel)]="newArticle.content"
+        placeholder="Write article..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Category</label>
+
+      <select [(ngModel)]="newArticle.categoryId">
+
+        <option [ngValue]="1">Account</option>
+
+        <option [ngValue]="2">Tickets</option>
+
+        <option [ngValue]="3">Software</option>
+
+        <option [ngValue]="4">Network</option>
+
+        <option [ngValue]="5">Hardware</option>
+
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Author</label>
+
+      <input
+        type="text"
+        [(ngModel)]="newArticle.author"
+        placeholder="Author"
+      />
+    </div>
+
+    <div class="form-group">
+  <label>Status</label>
+
+  <select [(ngModel)]="newArticle.status">
+    <option value="DRAFT">Draft</option>
+    <option value="PUBLISHED">Published</option>
+  </select>
+</div>
+
+    <div class="modal-actions">
+
+      <button
+        class="cancel-btn"
+        (click)="closeModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="save-btn"
+        (click)="saveArticle()"
+      >
+        Save Article
+      </button>
+
+    </div>
+
   </div>
 
 </div>

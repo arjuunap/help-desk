@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthServices } from '../../../core/services/auth/auth-services';
+import { AdminServices } from '../../../core/services/admin/admin-services';
 
 interface User {
   id: number;
@@ -28,16 +29,29 @@ export class AgentStaffs implements OnInit {
   selectedRole: string | null = null;
   loading = true;
 
+  expandedUserId: number | null = null;
+  userDetails: any[] = [];
+  loadingDetails = false;
+  usernames: any[] = [];
+  role: string = ''
+
   constructor(
     private userService: AuthServices,
+    private adminServices: AdminServices,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+
+    this.getRole()
+    this.getStaffs()
+  }
+
+  getStaffs() {
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
-        console.log('users',data)
+        console.log('Staffs', data)
         this.filteredUsers = data;
         this.loading = false;
         this.cdr.markForCheck();
@@ -49,6 +63,40 @@ export class AgentStaffs implements OnInit {
     });
   }
 
+  getRole() {
+    this.role = this.userService.getRole();
+    console.log('Role', this.role)
+  }
+
+  toggleUser(user: any) {
+
+    if (this.expandedUserId === user.id) {
+      this.expandedUserId = null;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.userDetails = [];
+
+    this.cdr.markForCheck();
+    this.expandedUserId = user.id;
+
+    this.loadingDetails = true;
+
+    this.adminServices.getAgentStaffs(user.id).subscribe({
+      next: (res) => {
+        console.log('Details', res)
+        this.userDetails = res;
+        this.loadingDetails = false;
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingDetails = false;
+      }
+    });
+
+  }
   get uniqueRoles(): string[] {
     return [...new Set(this.users.map(u => u.role).filter(Boolean))].sort();
   }
@@ -58,8 +106,8 @@ export class AgentStaffs implements OnInit {
       const q = this.searchQuery.toLowerCase();
       const matchesSearch = q
         ? user.name?.toLowerCase().includes(q) ||
-          user.email?.toLowerCase().includes(q) ||
-          user.department?.toLowerCase().includes(q)
+        user.email?.toLowerCase().includes(q) ||
+        user.department?.toLowerCase().includes(q)
         : true;
       const matchesRole = this.selectedRole
         ? user.role === this.selectedRole

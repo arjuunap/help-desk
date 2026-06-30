@@ -9,22 +9,23 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   providedIn: 'root',
 })
 export class AuthServices {
+
   private apiUrl = environment.apiUrl + '/auth';
   constructor(private http: HttpClient,
     private router: Router
   ) { }
 
-    jwtHelper = new JwtHelperService();
+  jwtHelper = new JwtHelperService();
 
-    googleLogin() {
+  googleLogin() {
     window.location.href = 'http://192.168.0.246:8080/oauth2/authorization/google';
   }
 
 
-  
+
   getUsers() {
-  return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff`);
-}
+    return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff`);
+  }
 
   googlelogout() {
     localStorage.removeItem('token');
@@ -45,7 +46,7 @@ export class AuthServices {
     return localStorage.getItem('token');
   }
 
-    getDecodedToken() {
+  getDecodedToken() {
 
     const token = this.getToken();
 
@@ -53,7 +54,7 @@ export class AuthServices {
 
     return this.jwtHelper.decodeToken(token);
   }
-  
+
   getRole(): string {
 
     const decodedToken = this.getDecodedToken();
@@ -64,22 +65,22 @@ export class AuthServices {
   UserDetails() {
     return this.http.get(this.apiUrl + '/me');
   }
-  
+
   registerUser(data: any) {
     return this.http.post(this.apiUrl + '/register', data);
   }
 
 
-getUserId(): number {
+  getUserId(): number {
 
-  const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-  if (!token) {
-    return 0;
+    if (!token) {
+      return 0;
+    }
+
+    const decodedToken = this.jwtHelper.decodeToken(token);
+
+    return decodedToken.userId;
   }
-
-  const decodedToken = this.jwtHelper.decodeToken(token);
-
-  return decodedToken.userId;
-}
 }

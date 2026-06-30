@@ -8,6 +8,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 @Injectable({
   providedIn: 'root',
 })
+
 export class AdminServices {
     private apiUrl = environment.apiUrl + '/admin';
 
@@ -22,6 +23,8 @@ export class AdminServices {
     createAgentStaff(data : any){
       return this.http.post<any>(`${this.apiUrl}/create-subordinate`,data);
     }
-    
+    getAgentStaffs(id: any) {
+    return this.http.get<any[]>(`${this.apiUrl}/fetch-all-staff-by-agent/${id}`);
+  }
 
 }

@@ -72,23 +72,46 @@
 
 
             <div class="form-field">
-                <label for="attachments">
-                    Attachments
-                </label>
+    <label for="attachments">
+        Attachments
+    </label>
 
-                <input #attachmentInput id="attachments" type="file" multiple (change)="onFilesSelected($event)"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
+    <input
+        #attachmentInput
+        id="attachments"
+        class="file-input"
+        type="file"
+        multiple
+        (change)="onFilesSelected($event)"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+    />
 
-                <div class="selected-files" *ngIf="selectedFiles.length > 0">
-                    <div *ngFor="let file of selectedFiles">
-                        {{ file.name }}
-                    </div>
-                </div>
+    <label for="attachments" class="upload-box">
+        <div class="upload-icon">📎</div>
 
-                <span class="field-hint">
-                    You can upload multiple files.
-                </span>
-            </div>
+        <div class="upload-text">
+            <strong>Click to upload</strong> or drag & drop files
+        </div>
+
+        
+    </label>
+
+    <div class="selected-files" *ngIf="selectedFiles.length">
+
+        <div class="file-chip" *ngFor="let file of selectedFiles">
+
+            <span class="file-name">
+                {{ file.name }}
+            </span>
+
+        </div>
+
+    </div>
+
+    <span class="field-hint">
+        You can upload multiple files.
+    </span>
+</div>
 
             <!-- Priority + Channel -->
             <div class="form-row">

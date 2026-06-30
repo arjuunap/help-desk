@@ -1,5 +1,29 @@
 <div class="app-shell">
-  <aside class="sidebar">
+  <header class="mobile-header">
+
+    <button
+        class="menu-btn"
+        (click)="toggleSidebar()">
+
+        ☰
+        
+
+    </button>
+
+    <h2 class="mobile-title">
+        HelpDesk Pro
+    </h2>
+
+</header>
+
+<div
+    *ngIf="sidebarOpen"
+    class="sidebar-overlay"
+    (click)="sidebarOpen=false">
+</div>
+  <aside
+class="sidebar"
+[class.open]="sidebarOpen">
     <div class="brand">
       <div class="brand-mark"></div>
       <span class="brand-name">HelpDesk Pro</span>
@@ -20,7 +44,7 @@
           <span class="nav-label">All Tickets</span>
           <span class="nav-badge badge-danger">{{totalTickets}}</span>
         </a>
-
+ 
         <a class="nav-item" routerLink="/sla-breaches" routerLinkActive="active">
           <span class="nav-icon" data-icon="alert"></span>
           <span class="nav-label">SLA Breaches</span>

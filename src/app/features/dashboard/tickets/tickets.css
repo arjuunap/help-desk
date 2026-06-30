@@ -431,3 +431,86 @@ select option {
     justify-content: center;
   }
 }
+
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 8px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+
+.upload-box:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.upload-icon {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.upload-text {
+    font-size: 15px;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.upload-text strong {
+    color: #2563eb;
+}
+
+.upload-box small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.selected-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.file-chip {
+    display: flex;
+    align-items: center;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #1e40af;
+}
+
+.file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+}
+
+.field-hint {
+    color: #64748b;
+    font-size: 12px;
+}

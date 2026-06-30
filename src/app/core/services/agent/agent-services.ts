@@ -29,8 +29,12 @@ export class AgentServices {
     return this.http.patch(`${this.apiUrl}/admin/assign-agent`, { agentId, staffId });
   }
 
-  getAgentWorkLoad(){
-    return this.http.get(`${this.apiUrl}/admin/agent-workload`)
+  getAgentWorkLoad(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/agent-workload`)
+  }
+
+  getAgentWorlLoad(agentId: number) {
+    return this.http.get(`${this.apiUrl}/admin/agent-workload/${agentId}`)
   }
 
 

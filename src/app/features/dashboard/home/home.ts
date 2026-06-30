@@ -45,7 +45,7 @@ export class Home implements OnInit {
   assigneeId: number = 0
   ticketId: number = 0
   role: string = ''
-  
+
   agentWorkload: any[] = []
   totalAgentWorkload: number = 0
 
@@ -61,6 +61,7 @@ export class Home implements OnInit {
 
   currentLogPage = 1;
   logPageSize = 5;
+  selectedStatus: string = 'ALL';
 
   constructor(
     private ticketService: TicketServices,
@@ -219,6 +220,7 @@ export class Home implements OnInit {
           const selectedUser = this.users.find(
             u => u.id === userId
           );
+          
 
           this.cd.detectChanges();
           this.cd.markForCheck()
@@ -267,10 +269,39 @@ export class Home implements OnInit {
       next: (data) => {
         console.log('dataaaaaaaa', data)
         this.cd.markForCheck();
+        this.agentWorkload = data;
+
       }
     })
   }
+  getInitials(name: string): string {
+    if (!name) return '';
 
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#2563eb',
+      '#7c3aed',
+      '#16a34a',
+      '#ea580c',
+      '#0891b2',
+      '#dc2626'
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    return colors[Math.abs(hash) % colors.length];
+  }
   fetchLogs(): void {
     this.loading = true;
     this.errorMessage = '';
@@ -494,26 +525,37 @@ export class Home implements OnInit {
 
   filterTickets(): void {
 
-    if (!this.searchTerm.trim()) {
-      this.filteredTickets = [...this.tickets];
-      this.currentPage = 1;
-      this.cd.markForCheck();
-      return;
-    }
+  const term = this.searchTerm.toLowerCase().trim();
 
-    const term = this.searchTerm.toLowerCase().trim();
+  this.filteredTickets = this.tickets.filter(ticket => {
 
-    this.filteredTickets = this.tickets.filter(ticket =>
+    const matchesSearch =
+      !term ||
       ticket.ticketNo?.toLowerCase().includes(term) ||
       ticket.subject?.toLowerCase().includes(term) ||
       ticket.description?.toLowerCase().includes(term) ||
-      ticket.status?.toLowerCase().includes(term) ||
       ticket.priority?.toLowerCase().includes(term) ||
-      ticket.assigneeName?.toLowerCase().includes(term)
-    );
+      ticket.status?.toLowerCase().includes(term) ||
+      ticket.assigneeName?.toLowerCase().includes(term);
 
-    this.currentPage = 1;
-    this.cd.markForCheck();
-  }
+    const matchesStatus =
+      this.selectedStatus === 'ALL'
+        ? true
+        : ticket.status === this.selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  this.currentPage = 1;
+  this.cd.markForCheck();
+}
+
+selectStatus(status: string): void {
+
+  this.selectedStatus = status;
+
+  this.filterTickets();
+
+}
 
 }

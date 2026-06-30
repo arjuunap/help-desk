@@ -64,12 +64,37 @@
         <div class="section-header">
             <span class="section-title">Recent tickets</span>
             <div class="filter-tabs">
-                <button class="filter-tab active">All</button>
-                <button class="filter-tab">Open</button>
-                <button class="filter-tab">In progress</button>
-                <button class="filter-tab">Resolved</button>
-            </div>
-        </div>
+
+    <button
+        class="filter-tab"
+        [class.active]="selectedStatus === 'ALL'"
+        (click)="selectStatus('ALL')">
+        All
+    </button>
+
+    <button
+        class="filter-tab"
+        [class.active]="selectedStatus === 'OPEN'"
+        (click)="selectStatus('OPEN')">
+        Open
+    </button>
+
+    <button
+        class="filter-tab"
+        [class.active]="selectedStatus === 'IN_PROGRESS'"
+        (click)="selectStatus('IN_PROGRESS')">
+        In Progress
+    </button>
+
+    <button
+        class="filter-tab"
+        [class.active]="selectedStatus === 'RESOLVED'"
+        (click)="selectStatus('RESOLVED')">
+        Resolved
+    </button>
+
+</div>
+        </div>`
 
         <table class="tickets-table">
             <thead>
@@ -207,7 +232,7 @@
 
             <ul class="activity-list">
 
-<li class="activity-item" *ngFor="let log of paginatedLogs">
+                <li class="activity-item" *ngFor="let log of paginatedLogs">
                     <span class="activity-dot" [ngClass]="getActivityDotClass(log.action)">
                     </span>
 
@@ -232,35 +257,28 @@
 
             </ul>
 
-            <div
-  class="pagination"
-  *ngIf="totalLogPages > 1">
+            <div class="pagination" *ngIf="totalLogPages > 1">
 
-  <button
-    class="page-btn"
-    (click)="changeLogPage(currentLogPage - 1)"
-    [disabled]="currentLogPage === 1">
+                <button class="page-btn" (click)="changeLogPage(currentLogPage - 1)" [disabled]="currentLogPage === 1">
 
-    Previous
+                    Previous
 
-  </button>
+                </button>
 
-  <span class="page-info">
-    Page {{ currentLogPage }}
-    of
-    {{ totalLogPages }}
-  </span>
+                <span class="page-info">
+                    Page {{ currentLogPage }}
+                    of
+                    {{ totalLogPages }}
+                </span>
 
-  <button
-    class="page-btn"
-    (click)="changeLogPage(currentLogPage + 1)"
-    [disabled]="currentLogPage === totalLogPages">
+                <button class="page-btn" (click)="changeLogPage(currentLogPage + 1)"
+                    [disabled]="currentLogPage === totalLogPages">
 
-    Next
+                    Next
 
-  </button>
+                </button>
 
-</div>
+            </div>
         </div>
 
         <!-- Agent Workload -->
@@ -272,64 +290,33 @@
 
             <ul class="workload-list">
 
-                <li class="workload-item">
+                <li class="workload-item" *ngFor="let agent of agentWorkload">
                     <span class="wl-dot dot-green-solid"></span>
-                    <div class="avatar av-sa">SA</div>
-                    <div class="wl-info">
-                        <span class="wl-name">Saeed Al-Rashid</span>
-                        <span class="wl-sub">6 active tickets</span>
-                    </div>
-                    <div class="wl-bar-wrap">
-                        <div class="wl-bar">
-                            <div class="wl-fill" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    <span class="wl-pct">75%</span>
-                </li>
 
-                <li class="workload-item">
-                    <span class="wl-dot dot-green-solid"></span>
-                    <div class="avatar av-nm">NM</div>
-                    <div class="wl-info">
-                        <span class="wl-name">Nora Mohammed</span>
-                        <span class="wl-sub">4 active tickets</span>
-                    </div>
-                    <div class="wl-bar-wrap">
-                        <div class="wl-bar">
-                            <div class="wl-fill" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    <span class="wl-pct">80%</span>
-                </li>
+                    <div
+  class="avatar"
+  [style.background]="getAvatarColor(agent.agentName)">
+  {{ getInitials(agent.agentName) }}
+</div>
 
-                <li class="workload-item">
-                    <span class="wl-dot dot-green-solid"></span>
-                    <div class="avatar av-fk">FK</div>
                     <div class="wl-info">
-                        <span class="wl-name">Fahad Al-Kahtani</span>
-                        <span class="wl-sub">3 active tickets</span>
+                        <span class="wl-name">{{ agent.agentName }}</span>
+                        <span class="wl-sub">
+                            {{ agent.activeTicketCount }} active
+                            {{ agent.activeTicketCount === 1 ? 'ticket' : 'tickets' }}
+                        </span>
                     </div>
-                    <div class="wl-bar-wrap">
-                        <div class="wl-bar">
-                            <div class="wl-fill" style="width: 38%"></div>
-                        </div>
-                    </div>
-                    <span class="wl-pct">38%</span>
-                </li>
 
-                <li class="workload-item">
-                    <span class="wl-dot dot-green-solid"></span>
-                    <div class="avatar av-ra">RA</div>
-                    <div class="wl-info">
-                        <span class="wl-name">Reem Al-Anazi</span>
-                        <span class="wl-sub">5 active tickets</span>
-                    </div>
                     <div class="wl-bar-wrap">
                         <div class="wl-bar">
-                            <div class="wl-fill" style="width: 63%"></div>
+                            <div class="wl-fill" [style.width.%]="agent.workloadPercentage">
+                            </div>
                         </div>
                     </div>
-                    <span class="wl-pct">63%</span>
+
+                    <span class="wl-pct">
+                        {{ agent.workloadPercentage }}%
+                    </span>
                 </li>
 
             </ul>

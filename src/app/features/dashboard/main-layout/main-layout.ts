@@ -24,64 +24,71 @@ export class MainLayoutComponent {
   constructor(
     private authServices: AuthServices,
     private router: Router,
-    private cd : ChangeDetectorRef,
-    private ticketServices : TicketServices
+    private cd: ChangeDetectorRef,
+    private ticketServices: TicketServices
   ) { }
-  totalTickets : number = 0
-  currentUser :any = {
+  totalTickets: number = 0
+  currentUser: any = {
     initials: '',
     name: '',
     role: ''
   };
+
+  sidebarOpen = false;
   ngOnInit(): void {
     this.fetchTicketCount();
-  this.authServices.UserDetails().subscribe({
-    next: (res: any) => {
-      console.log(res)
+    this.authServices.UserDetails().subscribe({
+      next: (res: any) => {
+        console.log(res)
 
-      const initials = res.fullName
-        ? res.fullName
+        const initials = res.fullName
+          ? res.fullName
             .split(' ')
             .map((word: string) => word.charAt(0).toUpperCase())
             .slice(0, 2)
             .join('')
-        : '';
+          : '';
 
-      this.currentUser = {
-        name: res.fullName,
-        role: res.role,
-        initials: initials
-      };
-      this.cd.detectChanges();
+        this.currentUser = {
+          name: res.fullName,
+          role: res.role,
+          initials: initials
+        };
+        this.cd.detectChanges();
 
-      // console.log(this.currentUser);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-}
- fetchTicketCount():void{
+        // console.log(this.currentUser);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+  fetchTicketCount(): void {
 
-  this.ticketServices.getTickets().subscribe({
-    next: (data: any) => {
-      this.totalTickets = data.length;
-      this.cd.detectChanges();
+    this.ticketServices.getTickets().subscribe({
+      next: (data: any) => {
+        this.totalTickets = data.length;
+        this.cd.detectChanges();
 
-      console.log(this.totalTickets);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
- }
- 
+        console.log(this.totalTickets);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
 
-  
+
+
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
 
   logout() {
 
     this.authServices.logout();
   }
-  
+
 }
