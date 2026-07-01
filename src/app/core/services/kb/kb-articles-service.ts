@@ -22,6 +22,10 @@ export class KbArticlesService {
     return this.http.post(`${this.apiUrl}/create`, articleData);
   }
 
+  readArticle(id: number){
+    return this.http.get<any[]>(`${this.apiUrl}/load-kb/${id}`)
+  }
+
   
 }
 

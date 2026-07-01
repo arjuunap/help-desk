@@ -11,14 +11,7 @@ import { Router } from '@angular/router';
 
 import { KbArticlesService } from '../../../../core/services/kb/kb-articles-service';
 
-interface Article {
-  author: string;
-  categoryId: number;
-  content: string;
-  published: boolean;
-  tags: string[] | null;
-  title: string;
-}
+
 
 interface CreateArticle {
   title: string;
@@ -38,8 +31,8 @@ interface CreateArticle {
 })
 export class Kb implements OnInit {
 
-  articles: Article[] = [];
-  filteredArticles: Article[] = [];
+  articles: any[] = [];
+  filteredArticles: any[] = [];
 
   loading = true;
 
@@ -48,6 +41,11 @@ export class Kb implements OnInit {
   selectedCategory: number | null = null;
 
   showModal = false;
+
+  // Read Article Modal
+  showReadModal = false;
+  selectedArticle: any = null;
+  readLoading = false;
 
  newArticle = {
   title: '',
@@ -82,9 +80,10 @@ export class Kb implements OnInit {
 
     this.articleService.getArticles().subscribe({
 
-      next: (data: Article[]) => {
+      next: (data: any[]) => {
 
         this.articles = data;
+        console.log(this.articles)
 
         this.applyFilters();
 
@@ -228,6 +227,33 @@ export class Kb implements OnInit {
 
     });
 
+  }
+
+  readArticle(id: number): void {
+    console.log('id',id)
+
+    this.showReadModal = true;
+    this.readLoading = true;
+    this.selectedArticle = null;
+    this.cdr.markForCheck();
+
+    this.articleService.readArticle(id).subscribe({
+      next: (data: any) => {
+        this.selectedArticle = data;
+        this.readLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.readLoading = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  closeReadModal(): void {
+    this.showReadModal = false;
+    this.selectedArticle = null;
+    this.cdr.markForCheck();
   }
 
 }

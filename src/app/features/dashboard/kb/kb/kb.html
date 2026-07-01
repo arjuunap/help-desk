@@ -105,7 +105,7 @@
           {{ article.author }}
         </span>
 
-        <button class="read-btn">
+        <button class="read-btn" (click)="readArticle(article.articleId)">
           Read
         </button>
       </div>
@@ -123,7 +123,7 @@
 
 </div>
 
-<!-- Modal -->
+<!-- Create Article Modal -->
 
 <div
   class="modal-overlay"
@@ -136,7 +136,10 @@
     (click)="$event.stopPropagation()"
   >
 
-    <h2>Create Article</h2>
+    <div class="modal-header">
+      <h2>Create Article</h2>
+      <button class="modal-close" (click)="closeModal()">&times;</button>
+    </div>
 
     <div class="form-group">
       <label>Title</label>
@@ -158,22 +161,33 @@
       ></textarea>
     </div>
 
-    <div class="form-group">
-      <label>Category</label>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category</label>
 
-      <select [(ngModel)]="newArticle.categoryId">
+        <select [(ngModel)]="newArticle.categoryId">
 
-        <option [ngValue]="1">Account</option>
+          <option [ngValue]="1">Account</option>
 
-        <option [ngValue]="2">Tickets</option>
+          <option [ngValue]="2">Tickets</option>
 
-        <option [ngValue]="3">Software</option>
+          <option [ngValue]="3">Software</option>
 
-        <option [ngValue]="4">Network</option>
+          <option [ngValue]="4">Network</option>
 
-        <option [ngValue]="5">Hardware</option>
+          <option [ngValue]="5">Hardware</option>
 
-      </select>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+
+        <select [(ngModel)]="newArticle.status">
+          <option value="DRAFT">Draft</option>
+          <option value="PUBLISHED">Published</option>
+        </select>
+      </div>
     </div>
 
     <div class="form-group">
@@ -185,15 +199,6 @@
         placeholder="Author"
       />
     </div>
-
-    <div class="form-group">
-  <label>Status</label>
-
-  <select [(ngModel)]="newArticle.status">
-    <option value="DRAFT">Draft</option>
-    <option value="PUBLISHED">Published</option>
-  </select>
-</div>
 
     <div class="modal-actions">
 
@@ -211,6 +216,62 @@
         Save Article
       </button>
 
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Read Article Modal -->
+
+<div
+  class="modal-overlay"
+  *ngIf="showReadModal"
+  (click)="closeReadModal()"
+>
+
+  <div
+    class="modal read-modal"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button class="modal-close modal-close--floating" (click)="closeReadModal()">&times;</button>
+
+    <div *ngIf="readLoading" class="kb-loading read-modal-loading">
+      <div class="spinner"></div>
+      <span>Loading article...</span>
+    </div>
+
+    <ng-container *ngIf="!readLoading && selectedArticle">
+
+      <div class="read-modal-top">
+        <span class="cat-badge">
+          {{ getCategoryLabel(selectedArticle.categoryId) }}
+        </span>
+
+        <span
+          class="status-badge"
+          [class.published]="selectedArticle.published"
+        >
+          {{ selectedArticle.published ? 'Published' : 'Draft' }}
+        </span>
+      </div>
+
+      <h2 class="read-modal-title">{{ selectedArticle.title }}</h2>
+
+      <div class="read-modal-meta">
+        <span class="meta-author">By {{ selectedArticle.author }}</span>
+      </div>
+
+      <div class="read-modal-divider"></div>
+
+      <div class="read-modal-content">{{ selectedArticle.content }}</div>
+
+    </ng-container>
+
+    <div *ngIf="!readLoading && !selectedArticle" class="kb-empty read-modal-empty">
+      <h3>Article Not Found</h3>
+      <p>We couldn't load this article. Please try again.</p>
     </div>
 
   </div>

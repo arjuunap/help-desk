@@ -87,6 +87,6 @@ export class AuthServices {
     return this.http.get(this.apiUrl + '/profile/me');
   }
   updateProfile(data: any){
-    return this.http.put(this.apiUrl + '/profile/me', data);
+    return this.http.put(this.apiUrl + '/profile/update', data);
   }
 }

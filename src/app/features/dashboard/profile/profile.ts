@@ -94,12 +94,13 @@ export class Profile {
     this.isSaving = true;
     const updatedData = {
       fullName: this.profileForm.get('fullName')?.value,
-      phoneNumber: this.profileForm.get('phoneNumber')?.value,
+      phone: this.profileForm.get('phoneNumber')?.value,
     };
 
     this.profileService.updateProfile(updatedData).subscribe({
       next: (data: any) => {
         this.profile = { ...this.profile, ...updatedData };
+        console.log(data,'data')
         this.isEditing = false;
         this.isSaving = false;
         this.statusMessage = 'Profile updated successfully.';
