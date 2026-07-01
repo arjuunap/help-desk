@@ -32,6 +32,8 @@ export class TicketServices {
   updateTicketStatus(id: number, data: any): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/status/${id}/update`, data);
   }
+
+  
  
   deleteTicket(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);

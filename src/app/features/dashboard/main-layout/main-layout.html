@@ -1,20 +1,5 @@
 <div class="app-shell">
-  <header class="mobile-header">
-
-    <button
-        class="menu-btn"
-        (click)="toggleSidebar()">
-
-        ☰
-        
-
-    </button>
-
-    <h2 class="mobile-title">
-        HelpDesk Pro
-    </h2>
-
-</header>
+ 
 
 <div
     *ngIf="sidebarOpen"
@@ -87,7 +72,7 @@ class="sidebar"
         </a>
 
         <a class="nav-item" routerLink="/main-layout/get-agent-staffs" routerLinkActive="active">
-          <span class="nav-label">Staffs</span>
+          <span class="nav-label">Staffs/agents</span>
         </a>
 
         <a class="nav-item" routerLink="/main-layout/kb" routerLinkActive="active">
@@ -117,15 +102,17 @@ class="sidebar"
       <!-- <div class="nav-section">
     <p class="nav-section-title">System</p>
 
-    <a class="nav-item"
-       routerLink="/settings"
-       routerLinkActive="active">
-      <span class="nav-label">Settings</span>
-    </a>
+    
 
   </div> -->
 
     </nav>
+
+    <a class="nav-item"
+       routerLink="/main-layout/profile"
+       routerLinkActive="active">
+      <span class="nav-label">Profile</span>
+    </a>
 
     <div class="sidebar-footer">
       <button class="logout-btn" type="button" (click)="logout()">

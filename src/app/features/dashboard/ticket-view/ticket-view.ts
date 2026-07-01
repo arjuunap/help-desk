@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TicketServices } from '../../../core/services/tickets/ticket-services';
 import { CommentServices } from '../../../core/services/comment/comment-services';
+import { environment } from '../../../environment/environment';
 
 export interface Comment {
   id: number;
@@ -42,6 +43,8 @@ export class TicketDetailComponent implements OnInit {
   currentTicketId = 0;
   selectedFiles: any[] = [];
   cd: any;
+  filePath = environment.filePath;
+
 
   constructor(
     private route: ActivatedRoute,

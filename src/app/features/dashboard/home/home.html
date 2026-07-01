@@ -65,35 +65,31 @@
             <span class="section-title">Recent tickets</span>
             <div class="filter-tabs">
 
-    <button
-        class="filter-tab"
-        [class.active]="selectedStatus === 'ALL'"
-        (click)="selectStatus('ALL')">
-        All
-    </button>
+                <button class="filter-tab" [class.active]="selectedStatus === 'ALL'" (click)="selectStatus('ALL')">
+                    All
+                </button>
 
-    <button
-        class="filter-tab"
-        [class.active]="selectedStatus === 'OPEN'"
-        (click)="selectStatus('OPEN')">
-        Open
-    </button>
+                <button class="filter-tab" [class.active]="selectedStatus === 'OPEN'" (click)="selectStatus('OPEN')">
+                    Open
+                </button>
 
-    <button
-        class="filter-tab"
-        [class.active]="selectedStatus === 'IN_PROGRESS'"
-        (click)="selectStatus('IN_PROGRESS')">
-        In Progress
-    </button>
+                <button class="filter-tab" [class.active]="selectedStatus === 'IN_PROGRESS'"
+                    (click)="selectStatus('IN_PROGRESS')">
+                    In Progress
+                </button>
 
-    <button
-        class="filter-tab"
-        [class.active]="selectedStatus === 'RESOLVED'"
-        (click)="selectStatus('RESOLVED')">
-        Resolved
-    </button>
+                <button class="filter-tab" [class.active]="selectedStatus === 'RESOLVED'"
+                    (click)="selectStatus('RESOLVED')">
+                    Resolved
+                </button>
 
-</div>
+                <button class="filter-tab" [class.active]="selectedStatus === 'CLOSED'"
+                    (click)="selectStatus('CLOSED')">
+                    CLOSED    
+                </button>
+               
+
+            </div>
         </div>`
 
         <table class="tickets-table">
@@ -293,11 +289,9 @@
                 <li class="workload-item" *ngFor="let agent of agentWorkload">
                     <span class="wl-dot dot-green-solid"></span>
 
-                    <div
-  class="avatar"
-  [style.background]="getAvatarColor(agent.agentName)">
-  {{ getInitials(agent.agentName) }}
-</div>
+                    <div class="avatar" [style.background]="getAvatarColor(agent.agentName)">
+                        {{ getInitials(agent.agentName) }}
+                    </div>
 
                     <div class="wl-info">
                         <span class="wl-name">{{ agent.agentName }}</span>

@@ -12,6 +12,7 @@ import { SlaListComponent } from './features/dashboard/slas/slas';
 import { AgentStaffs } from './features/dashboard/agent-staffs/agent-staffs';
 import { RegisterAgentStaff } from './features/dashboard/add-agent-staff/add-agent-staff';
 import { Kb } from './features/dashboard/kb/kb/kb';
+import { Profile } from './features/dashboard/profile/profile';
 
 
 export const routes: Routes = [
@@ -29,7 +30,8 @@ export const routes: Routes = [
         {path : 'slas',component : SlaListComponent}  ,
         {path : 'get-agent-staffs',component: AgentStaffs} ,
         {path :'add-agent-staff',component : RegisterAgentStaff},
-        {path : 'kb',component : Kb}
+        {path : 'kb',component : Kb},
+        {path : 'profile',component : Profile}
     ]}
 
 ];

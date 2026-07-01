@@ -30,11 +30,7 @@
       All
       <span class="tab-count">{{ users.length }}</span>
     </button>
-    <button *ngFor="let role of uniqueRoles" class="role-tab" [class.active]="selectedRole === role"
-      (click)="selectRole(role)">
-      {{ role }}
-      <!-- <span class="tab-count">{{ users }}</span> -->
-    </button>
+    
   </div>
 
   <!-- Loading -->
@@ -63,7 +59,7 @@
           <th>Member</th>
           <th>Role</th>
           <!-- <th>Department</th> -->
-          <th>Status</th>
+          <!-- <th>Status</th> -->
           <th>Actions</th>
         </tr>
       </thead>
@@ -92,18 +88,9 @@
                 {{ user.status ?? 'Active' }}
               </span>
             </td>
-
-            <td>
-              <div class="action-btns">
-                <button class="icon-btn edit-btn" (click)="$event.stopPropagation()">
-                  Edit
-                </button>
-
-                <button class="icon-btn delete-btn" (click)="$event.stopPropagation()">
-                  Delete
-                </button>
-              </div>
-            </td>
+           
+            
+            
           </tr>
 
           <!-- Expand Row -->

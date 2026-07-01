@@ -83,4 +83,10 @@ export class AuthServices {
 
     return decodedToken.userId;
   }
+  fetchProfile(){
+    return this.http.get(this.apiUrl + '/profile/me');
+  }
+  updateProfile(data: any){
+    return this.http.put(this.apiUrl + '/profile/me', data);
+  }
 }
